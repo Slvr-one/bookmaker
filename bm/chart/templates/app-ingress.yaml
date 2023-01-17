@@ -1,0 +1,29 @@
+{{- if .Values.Ingress.Enabled }}
+{{- $fullName := include "BM.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "BM.fullname" . }}-ingress-nginx
+  annotations:
+    # kubernetes.io/ingress.class: {{ .Values.Ingress.Class }}
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    #cert-manager.io/cluster-issuer: "letsencrypt-staging"
+spec:
+  ingressClassName: {{ .Values.Ingress.Class }}
+  rules:
+  - host: {{ .Values.User.Host }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ include "BM.fullname" . }}-crm
+            port:
+              number: {{ .Values.Services.app.servicePort}}
+  tls:
+  - hosts:
+    - {{ .Values.User.Host }}
+    secretName: {{ .Values.Environment }}-ssl-cert
+
+{{- end }}
