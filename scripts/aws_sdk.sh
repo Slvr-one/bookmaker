@@ -3,13 +3,12 @@ set -eu
 
 go get github.com/aws/aws-sdk-go-v2\
 
-modules=( 
-    "github.com/aws/aws-sdk-go-v2/config"\
+modules=("github.com/aws/aws-sdk-go-v2/config"\
     "github.com/aws/aws-sdk-go-v2/aws"\
-    "github.com/aws/aws-sdk-go-v2/service/dynamodb" )
+    "github.com/aws/aws-sdk-go-v2/service/dynamodb")
 
 for i in "${modules[@]}"
-do
+    do
 #    : 
-   go get $i
+    go get $i
 done
