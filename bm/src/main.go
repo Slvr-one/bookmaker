@@ -166,9 +166,9 @@ func main() {
 	router.HandleFunc("/health", Health).Methods("GET")
 	router.HandleFunc("/metrics", Monitor).Methods("GET")
 
-	router.HandleFunc("/horses", GetHorses).Methods("GET")
-	router.HandleFunc("/horses/{name}", GetHorse).Methods("GET")
-	router.HandleFunc("/horses/{name}", updateHorse).Methods("PUT")
+	router.HandleFunc("/LH", GetHorses).Methods("GET")          //List all available horses
+	router.HandleFunc("/GH/{name}", GetHorse).Methods("GET")    //Get a specific horse
+	router.HandleFunc("/UH/{name}", updateHorse).Methods("PUT") //Update a specific horse
 	// router.HandleFunc("/invest/{horse}/{amount}", Invest).Methods("UPDATE")
 
 	log.Printf("Listening on :%v...", serverPort)

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux
 
-# bilding the app again with dependencies reinstall 
+# bilding the app again & reinstalling dependencies
 
 rm -rf go.mod go.sum
 go mod init src/main.go
