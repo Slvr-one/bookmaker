@@ -6,8 +6,7 @@ WORKDIR /src
 RUN apk add --no-cache git curl
 
 #copy sources
-COPY src/main.go ./ 
-COPY src/.env ./ 
+COPY src/* ./ 
 
 #copy dependencies
 COPY go.mod ./
@@ -20,6 +19,10 @@ RUN go build -o bookmaker
 
 FROM alpine:3.9 as runtime
 
+# WORKDIR /app 
+
 COPY --from=build /src/bookmaker /app/bookmaker
+# COPY --from=build /src/static/ /app/static/
+
 # EXPOSE ${serverPort}
 ENTRYPOINT [ "/app/bookmaker" ]

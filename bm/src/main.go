@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 // diclare json structs - horses
@@ -43,6 +44,8 @@ type Bet struct {
 }
 
 var Bets []Bet
+
+// var tpl = template.Must(template.ParseFiles("static/index.html"))
 
 // welcom - html
 func Welcom(rw http.ResponseWriter, r *http.Request) {
@@ -143,6 +146,11 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 // main
 func main() {
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("Error loading .env file")
+	}
+
 	//get env for port (if provided by user, 5000 is default)
 	serverPort := os.Getenv("serverPort")
 	if serverPort == "" {
@@ -159,9 +167,10 @@ func main() {
 
 	// fs := http.FileServer(http.Dir("static"))
 
-	// router.Handle("/", fs).Methods("GET")
+	// router.Handle("/", fs) //.Methods("GET")
 	// router.Handle("/assets/", http.StripPrefix("/assets/", fs))
-	// router.Handle("/assets/", http.StripPrefix("/assets/", staticHandler)).Methods("GET")
+	// router.Handle("/assets/", http.StripPrefix("/assets/", staticHandler()).Methods("GET")
+
 	router.HandleFunc("/home", Welcom).Methods("GET")
 	router.HandleFunc("/health", Health).Methods("GET")
 	router.HandleFunc("/metrics", Monitor).Methods("GET")
