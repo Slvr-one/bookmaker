@@ -1,4 +1,4 @@
-package main
+package bookmaker
 
 import (
 	"encoding/json"
@@ -152,9 +152,9 @@ func main() {
 	}
 
 	//get env for port (if provided by user, 5000 is default)
-	serverPort := os.Getenv("serverPort")
-	if serverPort == "" {
-		serverPort = "5000"
+	port := os.Getenv("port")
+	if port == "" {
+		port = "5000"
 	}
 
 	router := mux.NewRouter()
@@ -180,7 +180,7 @@ func main() {
 	router.HandleFunc("/UH/{name}", updateHorse).Methods("PUT") //Update a specific horse
 	// router.HandleFunc("/invest/{horse}/{amount}", Invest).Methods("UPDATE")
 
-	log.Printf("Listening on :%v...", serverPort)
+	log.Printf("Listening on port: %v...", port)
 
-	log.Fatal(http.ListenAndServe(":"+serverPort, router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }

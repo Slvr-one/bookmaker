@@ -1,7 +1,7 @@
 FROM golang:1.14-alpine as build
 
 #declare
-# ENV serverPort ${serverPort:-5000}
+ENV port ${port:-5000}
 WORKDIR /src 
 RUN apk add --no-cache git curl
 
@@ -10,12 +10,14 @@ COPY src/* ./
 
 #copy dependencies
 COPY go.mod ./
-COPY go.sum ./
+# COPY go.sum ./
 
 #install dependencies
 RUN go mod download
 
 RUN go build -o bookmaker
+
+# ******************************************************* #
 
 FROM alpine:3.9 as runtime
 
@@ -24,5 +26,6 @@ FROM alpine:3.9 as runtime
 COPY --from=build /src/bookmaker /app/bookmaker
 # COPY --from=build /src/static/ /app/static/
 
-# EXPOSE ${serverPort}
+EXPOSE ${port}
 ENTRYPOINT [ "/app/bookmaker" ]
+# CMD [ "sleep" "inf" ]
