@@ -24,12 +24,6 @@ While Implementing:
 
 ## REST API REF:
 
-####  /home
-####  /assets
-
-####  /health
-####  /metrics
-
 
 #### /LH         (GET all available horses)
 #### /GH/{name}  (GET a specific horse)
@@ -43,6 +37,10 @@ While Implementing:
 | `/assets` | `GET` | `images & html` |
 | `/health` | `GET` | `for health check` |
 | `/metrics` | `GET` | `for monitoring purposes` |
+| `/LH` | `GET` | `list all available horses` |
+| `/GH/{name}` | `GET` | `list a specific horse detail` |
+| `/UH/{name}` | `PUT` | `update a specific horse by name` |
+| `/invest/{horse}/{amount}` | `UPDATE` | `invest - gamble on a horse` |
 
 
 
