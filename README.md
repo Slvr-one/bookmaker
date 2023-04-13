@@ -24,17 +24,26 @@ While Implementing:
 
 ## REST API REF:
 
-#### GET 
+####  /home
+####  /assets
 
-##### receive the participants in the competition
+####  /health
+####  /metrics
 
-```http
-  GET /<horses>/
-```
 
-| Parameter | Type     |
+#### /LH         (GET all available horses)
+#### /GH/{name}  (GET a specific horse)
+#### /UH/{name}  (Update a specific horse)
+#### /invest/{horse}/{amount}
+
+
+| Path | Method | Description |
 | :-------- | :------- | 
-| `horses` | `string` | 
+| `/home` | `GET` | 
+| `/assets` | `GET` | 
+| `/health` | `GET` | 
+| `/metrics` | `GET` | 
+
 
 
 
