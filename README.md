@@ -38,11 +38,11 @@ While Implementing:
 
 
 | Path | Method | Description |
-| :-------- | :------- | 
-| `/home` | `GET` | 
-| `/assets` | `GET` | 
-| `/health` | `GET` | 
-| `/metrics` | `GET` | 
+| :-------- | :------- | :------- | 
+| `/home` | `GET` | `home page`
+| `/assets` | `GET` | `images & html` |
+| `/health` | `GET` | `for health check` |
+| `/metrics` | `GET` | `for monitoring purposes` |
 
 
 
