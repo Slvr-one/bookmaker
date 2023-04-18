@@ -7,7 +7,7 @@ Built with Go, utilining MongoDB, Nginx, Docker & Compose.
 
 
 ## Breakdown:
-This app is part of my Portfolio project, which includes:
+This app is part of my Portfolio project, which includes
 developing and implementing CI/CD workflows with Jenkins, github actions, argocd.
 Observability, Logging & Monitoring with EFK, Prometheus & grafana.
 Deployed & configured with Kubernetes, Helm, Ansible, Terraform.
@@ -23,13 +23,6 @@ While Implementing:
 ![image](image.png)
 
 ## REST API REF:
-
-
-#### /LH         (GET all available horses)
-#### /GH/{name}  (GET a specific horse)
-#### /UH/{name}  (Update a specific horse)
-#### /invest/{horse}/{amount}
-
 
 | Path | Method | Description |
 | :-------- | :------- | :------- | 

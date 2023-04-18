@@ -3,6 +3,7 @@ FROM golang:1.14-alpine as build
 #declare
 ENV port ${port:-5000}
 WORKDIR /src 
+
 RUN apk add --no-cache git curl
 
 #copy sources

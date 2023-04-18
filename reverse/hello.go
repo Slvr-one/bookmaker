@@ -1,27 +1,30 @@
-/*
-Copyright 2014 Google Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 package main
 
 import (
 	"fmt"
-
-	"golang.org/x/example/stringutil"
 )
 
+func printUniqueValue(arr []int) {
+	//Create a dictionary for values of each element
+	dict := make(map[int]int)
+
+	for _, num := range arr {
+		dict[num] = dict[num] + 1
+	}
+	fmt.Println(dict)
+}
+
+// Reverse returns its argument string reversed rune-wise left to right.
+func reverse(s string) string {
+	r := []rune(s)
+	for i, j := 0, len(r)-1; i < len(r)/2; i, j = i+1, j-1 {
+		r[i], r[j] = r[j], r[i]
+	}
+	return string(r)
+}
+
 func main() {
-	fmt.Println(stringutil.Reverse("!selpmaxe oG ,olleH"))
+	fmt.Println(reverse("!selpmaxe oG ,olleH"))
+	inputArray := []int{10, 20, 30, 56, 67, 90, 10, 20}
+	printUniqueValue(inputArray)
 }
