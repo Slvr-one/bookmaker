@@ -2,14 +2,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"src/main.go/helpers"
@@ -95,9 +92,7 @@ func main() {
 
 	// // checking for a local .env file containing vars - redundant as of now
 	// envLoadErr := godotenv.Load()
-	// if envLoadErr != nil {
-	// 	log.Printf("err loading .env file: %s", envLoadErr)
-	// }
+	// helpers.HandleErr(envLoadErr, "err loading .env file.")
 
 	// init a server client with custom spec - for listen & serve
 	s := &http.Server{
@@ -131,186 +126,4 @@ func main() {
 	// log.Fatal(http.ListenAndServe(":"+*listenAddr, router))
 	log.Fatal(s.ListenAndServe())
 
-}
-
-// a func implementing a gambling option for a specific horse
-func Invest(w http.ResponseWriter, r *http.Request) {
-	// get the params from the url
-	vars := mux.Vars(r)
-	horseName := vars["horse"]
-	amount := vars["amount"]
-
-	// check if the horse exists
-	horseExists := false
-	for _, horse := range horses {
-		if horse.Name == horseName {
-			horseExists = true
-			break
-		}
-	}
-	if horseExists == false {
-		fmt.Fprintf(w, "Horse does not exist")
-		return
-
-	}
-	// check if the amount is a number
-	amountIsNumber := false
-	amountInt, err := fmt.Sscanf(amount, "%d")
-	if err == nil {
-		amountIsNumber = true
-		if amountInt < 0 {
-			fmt.Fprintf(w, "Amount must be a positive number")
-			return
-		}
-		if amountInt > horse.Record.Wins {
-			fmt.Fprintf(w, "Amount must be less than the wins")
-			return
-		}
-		// check if the bet is already placed
-		betExists := false
-		for _, bet := range Bets {
-			if bet.Horse == horseName {
-				betExists = true
-				break
-			}
-		}
-		if betExists == true {
-			fmt.Fprintf(w, "Bet already placed")
-			return
-		}
-		// add the bet to the slice of bets
-		bet := types.Bet{Horse: horseName, Amount: amountInt}
-		Bets = append(Bets, bet)
-		// update the wins and loses of the horse
-		for i, horse := range horses {
-			if horse.Name == horseName {
-				horses[i].Record.Wins -= amountInt
-				horses[i].Record.Loses += amountInt
-				break
-			}
-		}
-		// return the updated record
-		fmt.Fprintf(w, "%v", horses)
-		return
-	}
-	// if the amount is not a number
-	fmt.Fprintf(w, "Amount must be a number")
-	return
-}
-
-// a func to get all the available horses
-func GetHorses(w http.ResponseWriter, r *http.Request) {
-	// return the list of horses
-	fmt.Fprintf(w, "%v", horses)
-	return
-}
-
-// a func to get a specific horse
-func GetHorse(w http.ResponseWriter, r *http.Request) {
-	// get the params from the url
-	vars := mux.Vars(r)
-	horseName := vars["name"]
-	// check if the horse exists
-	horseExists := false
-	for _, horse := range horses {
-		if horse.Name == horseName {
-			horseExists = true
-			break
-		}
-	}
-	if horseExists == false {
-		fmt.Fprintf(w, "Horse does not exist")
-		return
-	}
-	// return the horse
-	fmt.Fprintf(w, "%v", horseName)
-	return
-
-}
-
-// a func to update a horse
-func updateHorse(w http.ResponseWriter, r *http.Request) {
-	// get the params from the url
-	vars := mux.Vars(r)
-	horseName := vars["name"]
-	// check if the horse exists
-	horseExists := false
-	for _, horse := range horses {
-		if horse.Name == horseName {
-			horseExists = true
-			break
-
-		}
-	}
-	if horseExists == false {
-		fmt.Fprintf(w, "Horse does not exist")
-		return
-	}
-	// get the new horse info
-	// get the body of the request
-	newHorse := types.Horse{}
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		err := json.NewDecoder(r.Body).Decode(&newHorse)
-		if err != nil {
-			if err != nil {
-				fmt.Fprintf(w, "Error reading body")
-				fmt.Fprintf(w, "Error decoding body")
-				log.Printf("err decoding json body. Err: %s", err)
-				return
-			}
-		}
-		// check if the new horse info is valid
-		if newHorse.Name == "" {
-			fmt.Fprintf(w, "Horse name cannot be empty")
-			return
-
-		}
-		if newHorse.Color == "" {
-			fmt.Fprintf(w, "Horse color cannot be empty")
-			return
-
-		}
-		// update the horse info
-		for i, horse := range horses {
-			if horse.Name == horseName {
-				horses[i].Name = newHorse.Name
-				horses[i].Color = newHorse.Color
-				break
-			}
-		}
-		// return the updated horse
-		fmt.Fprintf(w, "%v", horses)
-		return
-	}
-}
-
-// a func to monitor the app
-func Monitor(w http.ResponseWriter, r *http.Request) {
-	// get the metrics
-	metrics := getMetrics()
-	// return the metrics
-	fmt.Fprintf(w, "%v", metrics)
-	return
-
-}
-
-// a func to get the health of the app
-func Health(w http.ResponseWriter, r *http.Request) {
-	// return the health
-	fmt.Fprintf(w, "Healthy")
-	return
-}
-
-// a func to get the metrics
-func getMetrics() string {
-	// get the metrics
-	metrics := "Horses: " + strconv.Itoa(len(horses)) + "\n"
-	metrics += "Bets: " + strconv.Itoa(len(Bets)) + "\n"
-	return metrics
-}
-
-// a func to get the static assets
-func staticHandler() http.Handler {
-	return http.FileServer(http.Dir("./static"))
 }
