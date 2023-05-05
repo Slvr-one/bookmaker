@@ -1,0 +1,58 @@
+# Default values for bookmaker_v4.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: "dvir"
+
+# generalName: "dvir"
+
+App:
+  #bookmaker app image:
+  Image: "514095112279.dkr.ecr.eu-central-1.amazonaws.com/bookmaker"
+  imageTag: 1.0.0
+  #bookmaker app replicas:
+  Replicas: 3
+
+Services:
+  app:
+    targetPort: 5000
+    #bookmaker service endpoint:
+    servicePort: 80
+
+#env-vars for bookmaker app:
+Persistency: yes
+logLevel: "info"
+
+
+
+#environment for certificate issues:
+Environment: "prod" #"staging"
+
+#ingress config:
+Ingress:
+  Enabled: yes
+  Class: "nginx"
+
+#mongo-reset - cronJob:
+cronJob:
+  Enabled: yes
+  Schedule: "0 0 * * *" #once a day - midnight (@daily)
+
+#user detailes:
+User:
+  #your domain for ingress routing:   #IP.nip.io
+  Host: "dviross.zapto.org"  
+  #your email for CA cert managing
+  Email: "dviross@outlook.com"
+  #your time-zone for precise cron job
+  timeZone: "Asia/Jerusalem" #"Etc/UTC"   #check IL  (IST  IDT)
+
+#mongodb - overrides:
+mongodb:
+  architecture: replicaset
+  replicaCount: 3
+  auth:
+    enabled: yes
+    rootUser: "dviross"
+    rootPassword: "secretpass"

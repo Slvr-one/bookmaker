@@ -1,0 +1,25 @@
+{{- if .Values.cronJob.enabled }}
+# {{- $fullName := include "crm-v5.fullname" . -}}
+apiVersion: batch/v1
+kind:  CronJob #CronJobTimeZone
+metadata:
+  name: {{ include "BM.fullname" . }}-mongo-reset
+spec:
+  schedule: {{ .Values.cronJob.Schedule }}
+  # timeZone: {{ .Values.User.timeZone}}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: mongo-reset
+            image: mongo
+            envFrom:
+            - secretRef:
+                name: {{ include "BM.fullname" . }}-mongo
+            # command: ["/bin/sh","-c"]
+            # args: []
+            command: ["mongosh", "${MONGODB_URI}", "--eval", "db.clients.deleteMany( {} )" ] #'db.dropDatabase();'
+          restartPolicy: OnFailure
+
+{{- end }}

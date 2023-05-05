@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "BM.fullname" . }}-app
+data:
+  release: {{ include "BM.fullname" . }}
+  service: {{ include "BM.fullname" . }}-mongodb-headless
+  PERSISTENCE: {{ .Values.Persistency | quote }}
+  LOG_LEVEL: {{ .Values.logLevel }}

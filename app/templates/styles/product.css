@@ -1,0 +1,118 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+html {
+  font-size: 62.5%; /*for using REM units*/
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Poppins", "Segoe UI",
+    "Roboto", "Oxygen", "Ubuntu", "Fira Sans", sans-serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.618;
+}
+h5 {
+  font-size: 2rem;
+}
+h4 {
+  font-size: 2.5rem;
+}
+h3 {
+  font-size: 3.125rem;
+}
+h2 {
+  font-size: 3.9063rem;
+}
+h1 {
+  font-size: 4.8828rem;
+}
+.container {
+  width: 100%;
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+  margin-right: auto;
+  margin-left: auto;
+  padding-top: 1rem;
+}
+.image-section {
+  width: 35%;
+  padding: 0.5rem;
+}
+.product-section {
+  width: 65%;
+  padding: 0.5rem;
+}
+.product-image {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 5px;
+  box-shadow: 0 5px 5px rgb(5, 46, 51, 0.1);
+}
+@media (max-width: 768px) {
+  .image-section {
+    width: 100%;
+  }
+
+  .product-section {
+    width: 100%;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+
+  .card {
+    max-width: 50%;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+}
+@media (min-width: 768px) {
+  .card {
+    max-width: 60%;
+  }
+}
+.bg-grey {
+  background-color: rgb(245, 243, 243);
+}
+.bg-white {
+  background-color: white;
+  color: black;
+}
+.card {
+  box-shadow: 0 2px 20px rgb(5, 46, 51, 0.1);
+  border-radius: 5px;
+  padding: 1rem;
+  margin-top: 3rem;
+  background-color: white;
+}
+.text-center {
+  text-align: center;
+}
+.mx-auto {
+  margin-right: auto;
+  margin-left: auto;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.product-price {
+  color: rgb(59, 59, 59);
+  font-size: 90%;
+}
+.product-title {
+  font-weight: 600;
+  text-transform: capitalize;
+  margin-bottom: 1rem;
+}
+.product-description {
+  font-size: 95%;
+}
+.h-100 {
+  min-height: 100vh;
+  background-color: #f4f4f4;
+}
