@@ -7,27 +7,46 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 // http://localhost:9000/invest/%7BDangerous%7D/%7B500%7D
 
-// Init horses var as a slice of Horse struct (slice: an array with no fixed Size, Type)
 var (
 	horses    []Horse
 	MainBoard Board
 
-	srvPort = "9099" //to serve app
+	defaultServerPort = "9099"  //default port to serve app
+	DefaultMongoPort  = "27017" // default port for mongoDB connection
+	defaultHost       = "localhost"
 
-	host      = "localhost"
-	mongoPort = "27017" // to connect to mongoDB
-
-	mongodbUrl = fmt.Sprintf("mongodb://%s:%s", host, mongoPort)
+	conn = &Conn{}
 )
 
 func init() {
 	// rand.Seed(time.Now().UnixNano())
 	// SqlDB()
-	// MongoDB()
+	MainBoard.Title = "welcom to the Garrison; what we have today: "
+	MainBoard.Footer = "hope to see tou here again"
+
+	envLoadErr := godotenv.Load()
+	Check(envLoadErr, "No .env file found")
+
+	mongoPort, set := os.LookupEnv("mongoPort")
+	if !set {
+		LogToFile("mongoPort wasn't set, default is 27017")
+		mongoPort = DefaultMongoPort
+	}
+
+	mongoHost, set := os.LookupEnv("mongoHost")
+	if !set {
+		LogToFile("mongoHost wasn't set, default is localhost")
+		mongoHost = defaultHost
+	}
+
+	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
+	conn.Client = MongoDB(mongodbUrl)
 }
 
 // main
@@ -35,13 +54,12 @@ func main() {
 	initLog()
 	start := time.Now()
 	defer End(start)
+	MainBoard.Date = &start
 
-	//get port env var (if provided by user, default / 9090)
 	serverPort, set := os.LookupEnv("serverPort")
-	// serverPort := os.Getenv("serverPort")
 	if !set {
-		LogToFile("serverPort env was'nt set, default is 9090.")
-		serverPort = srvPort
+		LogToFile("serverPort env wasn't set, default is 9090.")
+		serverPort = defaultServerPort
 	}
 
 	listenAddr := flag.String("listenaddr", serverPort, "port to serve the app")
@@ -61,22 +79,6 @@ func main() {
 		// 	ctx = context.WithValue(ctx, keyServerAddr, l.Addr().String())
 		// 	return ctx
 		// },
-
-		// TLSConfig: &tls.Config{
-		// 	ClientAuth: tls.RequireAndVerifyClientCert,
-		// 	ClientCAs:  certPool,
-		// 	MinVersion: tls.VersionTLS12,
-		// 	CipherSuites: []uint16{
-		// 		tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
-		// 	}
-		// 	PreferServerCipherSuites: true,
-		// 	CurvePreferences: []tls.CurveID{
-		// 		tls.CurveP256,
-		// 		tls.X25519,
-		// 		tls.CurveP384,
-
-		// 	}
-		// // InsecureSkipVerify: true,
 	}
 
 	// Hardcoded data - @todo: add database

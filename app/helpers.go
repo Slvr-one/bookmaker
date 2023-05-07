@@ -67,3 +67,15 @@ func End(start time.Time) {
 	msg := fmt.Sprintf("ended at -> %s, elapsed -> %s", t, elapsed)
 	LogToFile(msg)
 }
+
+func ifHorseExist(horseName string) (exist bool) {
+
+	for _, h := range horses {
+		if h.Name == horseName {
+			exist = true
+			break
+		}
+		exist = false
+	}
+	return exist
+}

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"html/template"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
@@ -52,7 +51,7 @@ func Ping(p int) string {
 
 	if resp != nil && resp.StatusCode == 200 {
 		SC := resp.StatusCode
-		ret := fmt.Sprintf("OK, Got Health - status code => %d", SC)
+		ret := fmt.Sprintf("OK, Got Health - status code => %d, (%s)", SC, http.StatusText(SC))
 		return ret
 	} else {
 		SC := resp.StatusCode
@@ -70,12 +69,8 @@ func GetMetrics() string {
 }
 
 func Monitor(rw http.ResponseWriter, r *http.Request) {
-	// get the metrics
-	metrics := GetMetrics()
-	// return the metrics
-	fmt.Fprintf(rw, "%v", metrics)
-
-	// return
+	m := GetMetrics()
+	fmt.Fprintf(rw, "%v", m)
 }
 
 // func Logger(rw http.ResponseWriter, r *http.Request) {
@@ -103,8 +98,19 @@ func GetHorses(rw http.ResponseWriter, r *http.Request) {
 	// json.NewEncoder(rw).Encode(hLen)
 }
 
-func CreateHorse(w http.ResponseWriter, r *http.Request) {
-	// Add your horse creation logic here
+func CreateHorse(rw http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	horseName := params["name"]
+
+	exist := ifHorseExist(horseName)
+
+	if !exist {
+		msg := fmt.Sprintf("Horse named %s does not exist", horseName)
+		fmt.Fprintf(rw, msg)
+		LogToFile(msg)
+		return
+	}
+
 }
 
 func DeleteHorse(rw http.ResponseWriter, r *http.Request) {
@@ -163,18 +169,13 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 	horseName := params["name"]
 	horseColor := params["color"]
 
-	// duplicate - make into a func
 	// check if the horse exists
-	horseExists := false
-	for _, h := range horses {
-		if h.Name == horseName {
-			horseExists = true
-			break
-		}
-	}
+	exist := ifHorseExist(horseName)
 
-	if !horseExists {
-		fmt.Fprintf(rw, "Horse named %s does not exist", horseName)
+	if !exist {
+		msg := fmt.Sprintf("Horse named %s does not exist", horseName)
+		fmt.Fprintf(rw, msg)
+		LogToFile(msg)
 		return
 	}
 
@@ -188,8 +189,9 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		err := json.NewDecoder(r.Body).Decode(&newHorse)
 		if err != nil {
-			fmt.Fprintf(rw, "Error decoding / reading body")
-			log.Printf("err decoding json body. Err: %s", err)
+			msg := fmt.Sprintf("Error decoding / reading json body.")
+			fmt.Fprintf(rw, msg)
+			Check(err, msg)
 			return
 		}
 
@@ -205,10 +207,13 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 
 		// TODO here probably insert new horse to db
 		// update the horse info
-		for i, horse := range horses {
-			if horse.Name == horseName {
+		for i, h := range horses {
+			if h.Name == horseName {
 				horses[i].Name = horseName   //newHorse.Name
 				horses[i].Color = horseColor //newHorse.Color
+				horses[i].Record.Loses = 0
+				horses[i].Record.Wins = 0
+				// horses[i].Record = &Record{0, 0}
 				break
 			}
 		}
@@ -260,24 +265,20 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 
 	// ***
 	// check if the horse exists
-	horseExists := false
-	for _, h := range horses {
-		if h.Name == candidate.Name {
-			horseExists = true
-			break
-		}
-	}
+	exist := ifHorseExist(candidate.Name)
 
-	if !horseExists {
-		msg := fmt.Sprintf("Horse %s does not exist", candidate.Name)
-		fmt.Fprint(rw, msg)
+	if !exist {
+		msg := fmt.Sprintf("Horse named %s does not exist", candidate.Name)
+		fmt.Fprintf(rw, msg)
 		LogToFile(msg)
 		return
 	}
 
 	// ***
+	amountPositive := false
+
 	// check if the amount is a number [or strconv.Atoi() the param (commented above)]
-	amountIsNumber := false
+	// amountIsNumber := false
 	// amountInt, err := fmt.Sscanf(investment, "%d")
 	// if err == nil {
 	// amountIsNumber = true
@@ -289,7 +290,8 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 		return
 	} else {
 		// investment is bigger than 0, valid
-		amountIsNumber = true
+		// amountIsNumber = true
+		amountPositive = true
 
 		//
 		if investment > (candidate.Record.Wins * 100) {
@@ -302,8 +304,9 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if !amountIsNumber {
-		msg := "Amount isnt a number, correct your request"
+	if !amountPositive {
+		msg := "Amount isnt a positive number, correct your request"
+		// msg := "Amount isnt a number, correct your request"
 		fmt.Fprint(rw, msg)
 		LogToFile(msg)
 		return
@@ -348,13 +351,18 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 			// //lose
 			// horses[i].Record.Loses += 1 //amountInt
 
+			result, insertErr := conn.Collection.InsertOne(r.Context(), thisBet)
+			Check(insertErr, "err on db objects insertion.")
+
+			msg := fmt.Sprintf("Inserted a single document: %v", result)
+			LogToFile(msg)
 			// return the complet new bet
 			json.NewEncoder(rw).Encode(thisBet)
 			json.NewEncoder(rw).Encode(MainBoard)
 		}
 		// return the updated record
 		fmt.Fprintf(rw, "%v", horses)
-
+		fmt.Fprintf(rw, "%v", MainBoard)
 	}
 }
 
@@ -477,4 +485,8 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 // 		}
 // 	}
 // 	return newSlice
+// }
+
+// func Status(rw http.ResponseWriter, r *http.Request) {
+// 	rw.Write([]byte("API is up and running"))
 // }
