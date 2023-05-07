@@ -32,6 +32,7 @@ func Welcom(rw http.ResponseWriter, r *http.Request) {
 	// rw.Header().Set("Content-Encoding", "gzip")
 
 	tpl.Execute(rw, nil)
+	// io.WriteString(rw, "Hello again, Gefyra!")
 
 	fmt.Fprintf(rw, "<h3 style='color: black'>horses available: %v</h3>", len(horses))
 	fmt.Fprintf(rw, "<h3 style='color: black'> random go quote: %v</h3>", goQoute)
@@ -462,4 +463,18 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 // 		color.Yellow("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 // 		handler.ServeHTTP(w, r)
 // 	})
+// }
+
+// // removeBets remove the occurrences of an element from a slice, return the new slice
+// func removeBets(slice []string, elem string) []string {
+// 	// Create a new slice to store the result
+// 	newSlice := make([]string, 0, len(slice))
+// 	// Loop over the elements in the original slice
+// 	for _, value := range slice {
+// 		// If the element is not the one to remove, add it to the new slice
+// 		if value != elem {
+// 			newSlice = append(newSlice, value)
+// 		}
+// 	}
+// 	return newSlice
 // }
