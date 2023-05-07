@@ -106,7 +106,7 @@ func CreateHorse(rw http.ResponseWriter, r *http.Request) {
 
 	if !exist {
 		msg := fmt.Sprintf("Horse named %s does not exist", horseName)
-		fmt.Fprintf(rw, msg)
+		fmt.Fprint(rw, msg)
 		LogToFile(msg)
 		return
 	}
@@ -174,7 +174,7 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 
 	if !exist {
 		msg := fmt.Sprintf("Horse named %s does not exist", horseName)
-		fmt.Fprintf(rw, msg)
+		fmt.Fprint(rw, msg)
 		LogToFile(msg)
 		return
 	}
@@ -189,8 +189,8 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		err := json.NewDecoder(r.Body).Decode(&newHorse)
 		if err != nil {
-			msg := fmt.Sprintf("Error decoding / reading json body.")
-			fmt.Fprintf(rw, msg)
+			msg := fmt.Sprintf("Error decoding / reading json body - %v", err)
+			fmt.Fprint(rw, msg)
 			Check(err, msg)
 			return
 		}
@@ -253,15 +253,19 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 	ID := strconv.Itoa(rand.Intn(100))
 	// id, _ := strconv.Atoi(params["id"])
 
-	candidate.Name = params["horse"]
+	par := fmt.Sprintf("params: %v \n", params)
+	fmt.Fprint(rw, par)
+
 	betterName := params["investor"]
+	candidate.Name = params["horse"]
 	better.UserName = betterName
 	// better.FirstName = betterName[:]
 	// better.FirstName = betterName[:]
 
 	investment, convertionErr := strconv.Atoi(params["amount"])
 	// investment, _ = strconv.Atoi(params["amount"])
-	Check(convertionErr, "Error during str conversion to int.")
+	msg := fmt.Sprintf("Error conversion str %v to int", params["amount"])
+	Check(convertionErr, msg)
 
 	// ***
 	// check if the horse exists
@@ -269,7 +273,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 
 	if !exist {
 		msg := fmt.Sprintf("Horse named %s does not exist", candidate.Name)
-		fmt.Fprintf(rw, msg)
+		fmt.Fprint(rw, msg)
 		LogToFile(msg)
 		return
 	}

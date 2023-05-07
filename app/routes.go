@@ -25,7 +25,7 @@ func InitR() *mux.Router {
 	router.HandleFunc("/api/horses/{name}", updateHorse).Methods("PUT") //Update a specific horse
 	router.HandleFunc("/api/horses/{name}", DeleteHorse).Methods("DELETE")
 
-	router.HandleFunc("/invest/{horse}/{amount}", Invest).Methods("GET")
+	router.HandleFunc("/invest/{investor}/{horse}/{amount}", Invest).Methods("GET")
 
 	// router.Handle("/", http.FileServer(http.Dir("templates/styles/")))
 	// router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("templates/styles"))))

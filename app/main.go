@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 // http://localhost:9000/invest/%7BDangerous%7D/%7B500%7D
@@ -19,35 +17,35 @@ var (
 
 	defaultServerPort = "9099"  //default port to serve app
 	DefaultMongoPort  = "27017" // default port for mongoDB connection
-	defaultHost       = "localhost"
+	// defaultHost       = "localhost"
 
 	conn = &Conn{}
 )
 
-func init() {
-	// rand.Seed(time.Now().UnixNano())
-	// SqlDB()
-	MainBoard.Title = "welcom to the Garrison; what we have today: "
-	MainBoard.Footer = "hope to see tou here again"
+// func init() {
+// 	// rand.Seed(time.Now().UnixNano())
+// 	// SqlDB()
+// 	MainBoard.Title = "welcom to the Garrison; what we have today: "
+// 	MainBoard.Footer = "hope to see tou here again"
 
-	envLoadErr := godotenv.Load()
-	Check(envLoadErr, "No .env file found")
+// 	envLoadErr := godotenv.Load()
+// 	Check(envLoadErr, "No .env file found")
 
-	mongoPort, set := os.LookupEnv("mongoPort")
-	if !set {
-		LogToFile("mongoPort wasn't set, default is 27017")
-		mongoPort = DefaultMongoPort
-	}
+// 	mongoPort, set := os.LookupEnv("mongoPort")
+// 	if !set {
+// 		LogToFile("mongoPort wasn't set, default is 27017")
+// 		mongoPort = DefaultMongoPort
+// 	}
 
-	mongoHost, set := os.LookupEnv("mongoHost")
-	if !set {
-		LogToFile("mongoHost wasn't set, default is localhost")
-		mongoHost = defaultHost
-	}
+// 	mongoHost, set := os.LookupEnv("mongoHost")
+// 	if !set {
+// 		LogToFile("mongoHost wasn't set, default is localhost")
+// 		mongoHost = defaultHost
+// 	}
 
-	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
-	conn.Client = MongoDB(mongodbUrl)
-}
+// 	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
+// 	conn.Client = MongoDB(mongodbUrl)
+// }
 
 // main
 func main() {

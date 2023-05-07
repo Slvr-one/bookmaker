@@ -166,3 +166,111 @@
 
 [2023-05-04 02:56:37] set to listen on port: 9099
 
+[2023-05-07 20:29:10] mongoPort wasn't set, default is 27017
+
+[2023-05-07 20:29:10] mongoHost wasn't set, default is localhost
+
+[2023-05-07 20:29:20] err on db ping test
+
+[2023-05-07 20:29:41] mongoPort wasn't set, default is 27017
+
+[2023-05-07 20:29:41] mongoHost wasn't set, default is localhost
+
+[2023-05-07 20:29:53] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:29:53] set to listen on port: 9099
+
+[2023-05-07 20:30:15] Error during str conversion to int.
+
+[2023-05-07 20:30:15] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:31:57] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:31:57] set to listen on port: 9099
+
+[2023-05-07 20:32:01] Error during str conversion to int.
+
+[2023-05-07 20:32:01] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:32:03] Error during str conversion to int.
+
+[2023-05-07 20:32:03] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:32:04] Error during str conversion to int.
+
+[2023-05-07 20:32:04] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:33:19] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:33:19] set to listen on port: 9099
+
+[2023-05-07 20:33:21] Error conversion str {500} to int
+
+[2023-05-07 20:33:21] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:33:32] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:33:37] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:34:03] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:34:50] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:34:57] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:35:01] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:35:01] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:35:07] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:35:07] set to listen on port: 9099
+
+[2023-05-07 20:35:10] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:35:29] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:36:42] Horse named {Black Beauty} does not exist
+
+[2023-05-07 20:40:19] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:40:19] set to listen on port: 9099
+
+[2023-05-07 20:40:31] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:41:16] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:41:16] set to listen on port: 9099
+
+[2023-05-07 20:41:19] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:41:19] set to listen on port: 9099
+
+[2023-05-07 20:41:21] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:41:32] Horse named "Dangerous" does not exist
+
+[2023-05-07 20:43:37] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:43:37] set to listen on port: 9099
+
+[2023-05-07 20:43:39] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:46:08] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:46:08] set to listen on port: 9099
+
+[2023-05-07 20:46:18] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:46:48] serverPort env wasn't set, default is 9090.
+
+[2023-05-07 20:46:48] set to listen on port: 9099
+
+[2023-05-07 20:46:50] Horse named {Dangerous} does not exist
+
+[2023-05-07 20:47:40] Error conversion str :500 to int
+
+[2023-05-07 20:47:40] Horse named :Dangerous does not exist
+
+[2023-05-07 20:48:13] Horse named {Dangerou}s does not exist
+
