@@ -11,8 +11,9 @@ set -eux
 name=$1
 tag=$2
 
+acc="839821061981"
 region="eu-central-1" #frankfurt
-repo="514095112279.dkr.ecr.$region.amazonaws.com"
+repo="$acc.dkr.ecr.$region.amazonaws.com"
 
 #install awscli(.sh)
 
@@ -24,3 +25,16 @@ aws ecr get-login-password \
 docker build -t $name .
 docker tag $name:latest $repo/$name:$tag
 docker push $repo/$name:$tag
+
+
+kubectl create secret docker-registry regcred \
+  --docker-server=${acc}.dkr.ecr.${region}.amazonaws.com \
+  --docker-username=AWS \
+  --docker-password=$(aws ecr get-login-password) \
+  --namespace=app
+  
+# kubectl create secret docker-registry regcred \
+#   --docker-server=839821061981.dkr.ecr.eu-central-1.amazonaws.com \
+#   --docker-username=AWS \
+#   --docker-password=$(aws ecr get-login-password) \
+#   --namespace=app
