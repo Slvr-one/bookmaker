@@ -66,6 +66,7 @@ func End(start time.Time) {
 	// log to file <end session> msg
 	t := time.Now()
 	elapsed := t.Sub(start)
+	// elapsed = time.Since(start)
 	msg := fmt.Sprintf("ended at -> %s, elapsed -> %s", t, elapsed)
 	LogToFile(msg)
 	// log.Info().Msg(msg)

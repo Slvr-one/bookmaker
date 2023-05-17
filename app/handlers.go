@@ -2,11 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"html/template"
-	"log"
-	"os"
 	"time"
 
 	// "html/template"
@@ -23,32 +20,31 @@ import (
 	// "gopkg.in/mgo.v2/bson"
 	// "rsc.io/quote"
 	"github.com/gin-gonic/gin"
-	resty "github.com/go-resty/resty/v2"
-	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/propagation"
-	"go.opentelemetry.io/otel/trace"
+	// "go.opentelemetry.io/otel"
+	// "go.opentelemetry.io/otel/propagation"
+	// "go.opentelemetry.io/otel/trace"
 )
 
 // welcom - html
-func Welcom(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "text/html; charset=utf-8")
-	// rw.Header().Set("Content-Type", "text/html")
-	// rw.Header().Set("Accept-Charset","utf-8")
+func Welcom(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
+	// ctx.Writer.Header().Set("Content-Type", "text/html")
+	// ctx.Writer.Header().Set("Accept-Charset","utf-8")
 
-	// rw.Header().Set("Cache-Control", "no-cache")
-	// rw.Header().Set("Cache-Control","no-cache, no-store, must-revalidate")
+	// ctx.Writer.Header().Set("Cache-Control", "no-cache")
+	// ctx.Writer.Header().Set("Cache-Control","no-cache, no-store, must-revalidate")
 
-	// rw.Header().Set("Pragma","no-cache")
-	// rw.Header().Set("Expires","0")
-	// rw.Header().Set("Access-Control-Allow-Origin","*")
-	// rw.Header().Set("Access-Control-Allow-Headers","Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-	// rw.Header().Set("Access-Control-Allow-Methods","POST, GET, OPTIONS, PUT, DELETE")
-	// rw.Header().Set("Access-Control-Expose-Headers","Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
-	// rw.Header().Set("Access-Control-Allow-Credentials","true")
-	// rw.Header().Set("Content-Encoding", "gzip")
-	// rw.Header().Set("Connection", "keep-alive")
+	// ctx.Writer.Header().Set("Pragma","no-cache")
+	// ctx.Writer.Header().Set("Expires","0")
+	// ctx.Writer.Header().Set("Access-Control-Allow-Origin","*")
+	// ctx.Writer.Header().Set("Access-Control-Allow-Headers","Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	// ctx.Writer.Header().Set("Access-Control-Allow-Methods","POST, GET, OPTIONS, PUT, DELETE")
+	// ctx.Writer.Header().Set("Access-Control-Expose-Headers","Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
+	// ctx.Writer.Header().Set("Access-Control-Allow-Credentials","true")
+	// ctx.Writer.Header().Set("Content-Encoding", "gzip")
+	// ctx.Writer.Header().Set("Connection", "keep-alive")
 
-	// fmt.Fprintf(rw, Html)
+	// fmt.Fprintf(ctx.Writer, Html)
 
 	tpl := template.Must(template.ParseFiles("templates/index2.html"))
 	dt := time.Now()
@@ -57,57 +53,57 @@ func Welcom(rw http.ResponseWriter, r *http.Request) {
 	goQoute := quote.Go()
 	// message := fmt.Sprintf(randomFormat(), user)
 
-	tpl.Execute(rw, nil)
-	// io.WriteString(rw, "Hello again, Gefyra!")
+	tpl.Execute(ctx.Writer, nil)
+	// io.WriteString(ctx.Writer, "Hello again, Gefyra!")
 
-	fmt.Fprintf(rw, "<h3 style='color: black'>horses available: %v</h3>", len(horses))
-	fmt.Fprintf(rw, "<h3 style='color: black'> random go quote: %v</h3>", goQoute)
-	fmt.Fprintf(rw, "<h5 style='color: black'> %s</h5>", dt.Format("01-02-2006 15:04:05 Mon"))
+	fmt.Fprintf(ctx.Writer, "<h3 style='color: black'>horses available: %v</h3>", len(horses))
+	fmt.Fprintf(ctx.Writer, "<h3 style='color: black'> random go quote: %v</h3>", goQoute)
+	fmt.Fprintf(ctx.Writer, "<h5 style='color: black'> %s</h5>", dt.Format("01-02-2006 15:04:05 Mon"))
 }
 
 // health - html
-func Health(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "text/html")
-	rw.Write([]byte("<h3 style='color: steelblue'>Got Health</h3>"))
+func Health(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "text/html")
+	ctx.Writer.Write([]byte("<h3 style='color: steelblue'>Got Health</h3>"))
 
 }
 
-func httpErrorBadRequest(err error, ctx *gin.Context) {
-	httpError(err, ctx, http.StatusBadRequest)
-}
+// func httpErrorBadRequest(err error, ctx *gin.Context) {
+// 	httpError(err, ctx, http.StatusBadRequest)
+// }
 
-func httpErrorInternalServerError(err error, ctx *gin.Context) {
-	httpError(err, ctx, http.StatusInternalServerError)
-}
+// func httpErrorInternalServerError(err error, ctx *gin.Context) {
+// 	httpError(err, ctx, http.StatusInternalServerError)
+// }
 
-func httpError(err error, ctx *gin.Context, status int) {
-	log.Println(err.Error())
-	ctx.String(status, err.Error())
-}
+// func httpError(err error, ctx *gin.Context, status int) {
+// 	log.Println(err.Error())
+// 	ctx.String(status, err.Error())
+// }
 
-func pingHandler(ctx *gin.Context) {
-	req := resty.New().R().SetHeader("Content-Type", "application/text")
-	otelCtx := ctx.Request.Context()
-	span := trace.SpanFromContext(otelCtx)
-	defer span.End()
-	otel.GetTextMapPropagator().Inject(otelCtx, propagation.HeaderCarrier(req.Header))
-	url := ctx.Query("url")
-	if len(url) == 0 {
-		url = os.Getenv("PING_URL")
-		if len(url) == 0 {
-			httpErrorBadRequest(errors.New("url is empty"), ctx)
-			return
-		}
-	}
-	log.Printf("Sending a ping to %s", url)
-	resp, err := req.Get(url)
-	if err != nil {
-		httpErrorBadRequest(err, ctx)
-		return
-	}
-	log.Println(resp.String())
-	ctx.String(http.StatusOK, resp.String())
-}
+// func pingHandler(ctx *gin.Context) {
+// 	req := resty.New().R().SetHeader("Content-Type", "application/text")
+// 	otelCtx := ctx.Request.Context()
+// 	span := trace.SpanFromContext(otelCtx)
+// 	defer span.End()
+// 	otel.GetTextMapPropagator().Inject(otelCtx, propagation.HeaderCarrier(req.Header))
+// 	url := ctx.Query("url")
+// 	if len(url) == 0 {
+// 		url = os.Getenv("PING_URL")
+// 		if len(url) == 0 {
+// 			httpErrorBadRequest(errors.New("url is empty"), ctx)
+// 			return
+// 		}
+// 	}
+// 	log.Printf("Sending a ping to %s", url)
+// 	resp, err := req.Get(url)
+// 	if err != nil {
+// 		httpErrorBadRequest(err, ctx)
+// 		return
+// 	}
+// 	log.Println(resp.String())
+// 	ctx.String(http.StatusOK, resp.String())
+// }
 
 // for monitor "OK" loop
 func Ping(host string, port int) string {
@@ -154,17 +150,17 @@ func GetMetrics(host string, port int) string {
 	return metrics
 }
 
-func Monitor(rw http.ResponseWriter, r *http.Request) {
+func Monitor(ctx *gin.Context) {
 
 	// port :=
-	host := r.Host
+	host := ctx.Request.Host
 	port, _ := strconv.Atoi(defaultServerPort) //r.URL.Query().Get("port")
 
 	m := GetMetrics(host, port)
-	fmt.Fprintf(rw, "%v", m)
+	fmt.Fprintf(ctx.Writer, "%v", m)
 }
 
-// func Logger(rw http.ResponseWriter, r *http.Request) {
+// func Logger(ctx *gin.Context) {
 // 	//if app is up, keep logging every 5
 // 	for {
 // 		// result := Ping()
@@ -177,45 +173,45 @@ func Monitor(rw http.ResponseWriter, r *http.Request) {
 ///////////////////////////////////////////////////////////
 
 // fetch horses available (number)
-func GetHorses(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json")
+func GetHorses(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "application/json")
 
 	// return the list of horses
-	json.NewEncoder(rw).Encode(horses)
-	// fmt.Fprintf(rw, "%v", horses)
+	json.NewEncoder(ctx.Writer).Encode(horses)
+	// fmt.Fprintf(ctx.Writer, "%v", horses)
 
 	// hLen := len(horses)
-	// json.NewEncoder(rw).Encode(hLen)
+	// json.NewEncoder(ctx.Writer).Encode(hLen)
 }
 
-func CreateHorse(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json")
+func CreateHorse(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
+	params := mux.Vars(ctx.Request)
 	horseName := params["name"]
 
 	exist := ifHorseExist(horseName)
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot create, Horse named %s does not exist", horseName)
-		fmt.Fprint(rw, msg)
+		fmt.Fprint(ctx.Writer, msg)
 		LogToFile(msg)
 		return
 	}
 
 }
 
-func DeleteHorse(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json")
+func DeleteHorse(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
+	params := mux.Vars(ctx.Request)
 	horseName := params["name"]
 
 	exist := ifHorseExist(horseName)
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot delete, Horse named %s does not exist", horseName)
-		fmt.Fprint(rw, msg)
+		fmt.Fprint(ctx.Writer, msg)
 		LogToFile(msg)
 		return
 	}
@@ -231,14 +227,15 @@ func DeleteHorse(rw http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-	rw.WriteHeader(http.StatusNoContent)
+	ctx.Writer.WriteHeader(http.StatusNoContent)
 }
 
 // fetch horse by name
-func GetHorse(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json")
+// ctx.Writer http.ResponseWriter, r *http.Request
+func GetHorse(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
+	params := mux.Vars(ctx.Request)
 	horseName := params["name"]
 
 	// check if the horse exists
@@ -246,7 +243,7 @@ func GetHorse(rw http.ResponseWriter, r *http.Request) {
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot get, Horse named %s does not exist", horseName)
-		fmt.Fprint(rw, msg)
+		fmt.Fprint(ctx.Writer, msg)
 		LogToFile(msg)
 		return
 	}
@@ -255,22 +252,22 @@ func GetHorse(rw http.ResponseWriter, r *http.Request) {
 
 		if h.Name == horseName {
 			// var horse Horse
-			json.NewEncoder(rw).Encode(h)
+			json.NewEncoder(ctx.Writer).Encode(h)
 			return
 		}
 	}
-	// json.NewEncoder(rw).Encode(&Horse{})
+	// json.NewEncoder(ctx.Writer).Encode(&Horse{})
 
 	// // return the horse
-	// fmt.Fprintf(rw, "%v", horseName)
+	// fmt.Fprintf(ctx.Writer, "%v", horseName)
 	// return
 }
 
 // Update horse name
-func updateHorse(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json")
+func UpdateHorse(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(r)
+	params := mux.Vars(ctx.Request)
 	horseName := params["name"]
 	horseColor := params["color"]
 	horseAge, _ := strconv.Atoi(params["age"])
@@ -280,7 +277,7 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot update, Horse named %s does not exist", horseName)
-		fmt.Fprint(rw, msg)
+		fmt.Fprint(ctx.Writer, msg)
 		LogToFile(msg)
 		return
 	}
@@ -291,24 +288,24 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 
 	// get the body of the request
 	// body, err := ioutil.ReadAll(r.Body)
-	_, err := ioutil.ReadAll(r.Body)
+	_, err := ioutil.ReadAll(ctx.Request.Body)
 
 	if err != nil {
-		err := json.NewDecoder(r.Body).Decode(&newHorse)
+		err := json.NewDecoder(ctx.Request.Body).Decode(&newHorse)
 		if err != nil {
 			msg := fmt.Sprintf("Error decoding / reading json body - %v", err)
-			fmt.Fprint(rw, msg)
+			fmt.Fprint(ctx.Writer, msg)
 			Check(err, msg)
 			return
 		}
 
 		// check if the new horse info is valid
 		if newHorse.Name == "" {
-			fmt.Fprintf(rw, "Horse name cannot be empty")
+			fmt.Fprintf(ctx.Writer, "Horse name cannot be empty")
 			return
 		}
 		if newHorse.Color == "" {
-			fmt.Fprintf(rw, "Horse color cannot be empty")
+			fmt.Fprintf(ctx.Writer, "Horse color cannot be empty")
 			return
 		}
 
@@ -330,7 +327,7 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 		}
 		// return the updated horse
 
-		fmt.Fprintf(rw, "%v", horses)
+		fmt.Fprintf(ctx.Writer, "%v", horses)
 		return
 	}
 
@@ -341,21 +338,21 @@ func updateHorse(rw http.ResponseWriter, r *http.Request) {
 	// 		_ = json.NewDecoder(r.Body).Decode(&horse)
 	// 		horse.Name = horseName
 	// 		horses = append(horses, horse)
-	// 		json.NewEncoder(rw).Encode(horse)
+	// 		json.NewEncoder(ctx.Writer).Encode(horse)
 	// 		return
 	// 	}
 	// }
 }
 
 // bet on a horse
-func Invest(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Set("Content-Type", "application/json")
+func Invest(ctx *gin.Context) {
+	ctx.Writer.Header().Set("Content-Type", "application/json")
 
 	var (
 		candidate  Horse
 		better     Person
 		investment int
-		params     = mux.Vars(r)
+		params     = mux.Vars(ctx.Request)
 	)
 
 	// ***
@@ -364,7 +361,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 	// id, _ := strconv.Atoi(params["id"])
 
 	// par := fmt.Sprintf("params: %v \n", params)
-	// fmt.Fprint(rw, par)
+	// fmt.Fprint(ctx.Writer, par)
 
 	betterName := params["investor"]
 	candidate.Name = params["horse"]
@@ -383,7 +380,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 
 	if !exist {
 		msg := fmt.Sprintf("Horse named %s does not exist", candidate.Name)
-		fmt.Fprint(rw, msg)
+		fmt.Fprint(ctx.Writer, msg)
 		LogToFile(msg)
 		return
 	}
@@ -399,7 +396,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 	// }
 	if investment < 0 {
 		msg := fmt.Sprintf("Amount must be a positive number, got: %v", investment)
-		fmt.Fprint(rw, msg)
+		fmt.Fprint(ctx.Writer, msg)
 		LogToFile(msg)
 		return
 	} else {
@@ -412,7 +409,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 			msg := fmt.Sprintf("investment is -> %v, candidate record -> L: %v / W: %v", investment, candidate.Record.Losses, candidate.Record.Wins)
 			expln := fmt.Sprintf("Amount must be proportional to %v's record (win / lose) odds", candidate.Name)
 
-			fmt.Fprintf(rw, msg, expln)
+			fmt.Fprintf(ctx.Writer, msg, expln)
 			LogToFile(msg + expln)
 			return
 		}
@@ -421,7 +418,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 	if !amountPositive {
 		msg := "Amount isnt a positive number, correct your request"
 		// msg := "Amount isnt a number, correct your request"
-		fmt.Fprint(rw, msg)
+		fmt.Fprint(ctx.Writer, msg)
 		LogToFile(msg)
 		return
 	}
@@ -465,18 +462,18 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 			// //lose
 			// horses[i].Record.Loses += 1 //amountInt
 
-			result, insertErr := conn.Collection.InsertOne(r.Context(), thisBet)
+			result, insertErr := conn.Collection.InsertOne(ctx.Request.Context(), thisBet)
 			Check(insertErr, "err on db objects insertion.")
 
 			msg := fmt.Sprintf("Inserted a single document: %v", result)
 			LogToFile(msg)
 			// return the complet new bet
-			json.NewEncoder(rw).Encode(thisBet)
-			json.NewEncoder(rw).Encode(MainBoard)
+			json.NewEncoder(ctx.Writer).Encode(thisBet)
+			json.NewEncoder(ctx.Writer).Encode(MainBoard)
 		}
 		// return the updated record
-		fmt.Fprintf(rw, "%v", horses)
-		fmt.Fprintf(rw, "%v", MainBoard)
+		fmt.Fprintf(ctx.Writer, "%v", horses)
+		fmt.Fprintf(ctx.Writer, "%v", MainBoard)
 	}
 }
 
@@ -507,21 +504,21 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 // 	w.Write([]byte(fmt.Sprint(count)))
 // }
 
-// func userHandler(rw http.ResponseWriter, r *http.Request) {
+// func userHandler(ctx.Writer http.ResponseWriter, r *http.Request) {
 // 	id := r.URL.Query().Get("id")
 // 	if id == "" {
-// 		http.Error(rw, "The id query parameter is missing", http.StatusBadRequest)
+// 		http.Error(ctx.Writer, "The id query parameter is missing", http.StatusBadRequest)
 // 		return
 // 	}
 
-// 	fmt.Fprintf(rw, "<h1>The user id is: %s</h1>", id)
+// 	fmt.Fprintf(ctx.Writer, "<h1>The user id is: %s</h1>", id)
 // }
 
-// func searchHandler(rw http.ResponseWriter, r *http.Request) {
+// func searchHandler(ctx.Writer http.ResponseWriter, r *http.Request) {
 // 	u, err := url.Parse(r.URL.String())
 
 // 	if err != nil {
-// 		http.Error(rw, err.Error(), http.StatusInternalServerError)
+// 		http.Error(ctx.Writer, err.Error(), http.StatusInternalServerError)
 // 		return
 // 	}
 
@@ -556,7 +553,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 // // ###
 
 // // // a func to update a horse
-// // func updateHorse(w http.ResponseWriter, r *http.Request) {
+// // func updateHorse(ctx *gin.Context) {
 
 // // 	// // check if the horse exists
 // // 	// horseExists := false
@@ -581,7 +578,7 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 
 // // LogRequest -> logs req info
 // func LogRequest(handler http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 	return http.HandlerFunc(func(ctx *gin.Context) {
 // 		color.Yellow("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
 // 		handler.ServeHTTP(w, r)
 // 	})
@@ -601,6 +598,6 @@ func Invest(rw http.ResponseWriter, r *http.Request) {
 // 	return newSlice
 // }
 
-// func Status(rw http.ResponseWriter, r *http.Request) {
-// 	rw.Write([]byte("API is up and running"))
+// func Status(ctx *gin.Context) {
+// 	ctx.Writer.Write([]byte("API is up and running"))
 // }

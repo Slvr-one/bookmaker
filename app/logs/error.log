@@ -274,3 +274,29 @@
 
 [2023-05-07 20:48:13] Horse named {Dangerou}s does not exist
 
+[2023-05-17 22:39:12] serverPort env wasn't set, default is 9090.
+
+[2023-05-17 22:39:12] set to listen on port: 9099
+
+[2023-05-17 22:40:18] ended at -> 2023-05-17 22:40:18.253970838 +0300 IDT m=+66.222775852, elapsed -> 1m6.208755398s
+
+[2023-05-17 22:58:10] serverPort env wasn't set, default is 9090.
+
+[2023-05-17 22:58:10] set to listen on port: 9099
+
+[2023-05-17 22:58:34] ended at -> 2023-05-17 22:58:34.395421462 +0300 IDT m=+24.345245573, elapsed -> 24.339686847s
+
+[2023-05-17 22:59:14] serverPort env wasn't set, default is 9090.
+
+[2023-05-17 22:59:14] set to listen on port: 9099
+
+[2023-05-17 22:59:40] err on http get for pinging http://localhost:9099:9099/metrics
+
+[2023-05-17 23:03:34] ended at -> 2023-05-17 23:03:34.1035137 +0300 IDT m=+259.316702133, elapsed -> 4m19.311299373s
+
+[2023-05-17 23:03:47] serverPort env wasn't set, default is 9090.
+
+[2023-05-17 23:03:47] set to listen on port: 9099
+
+[2023-05-17 23:04:52] ended at -> 2023-05-17 23:04:52.590703146 +0300 IDT m=+64.747930085, elapsed -> 1m4.742722137s
+
