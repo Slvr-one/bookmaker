@@ -18,6 +18,7 @@ import (
 func initLog() {
 	// UNIX Time is faster and smaller than most timestamps
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+
 	// log.Print("hello world")
 
 	backLogger, _ := thoth.Init("backlog")
@@ -32,6 +33,7 @@ func Check(err error, msg string) {
 
 		// clog.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 		// clog.Fatalf("Error: %v\n Error Message: %v", err, msg)
+
 		// panic(err.Error())
 		// os.Exit(-1)
 	}
@@ -54,7 +56,6 @@ func RandomFormat() string {
 		"Hi %v, knew you'd come back",
 		"%v, You again..",
 	}
-
 	// Return a randomly selected message format by specifying
 	// a random index for the slice of formats.
 	i := rand.Intn(len(formats))
@@ -67,10 +68,10 @@ func End(start time.Time) {
 	elapsed := t.Sub(start)
 	msg := fmt.Sprintf("ended at -> %s, elapsed -> %s", t, elapsed)
 	LogToFile(msg)
+	// log.Info().Msg(msg)
 }
 
 func ifHorseExist(horseName string) (exist bool) {
-
 	for _, h := range horses {
 		if h.Name == horseName {
 			exist = true

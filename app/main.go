@@ -11,13 +11,16 @@ import (
 
 // http://localhost:9000/invest/%7BDangerous%7D/%7B500%7D
 
+// // Define some constants representing the rules of the game
+// const MaxBet = 10 // The maximum allowable bet
+
 var (
 	horses    []Horse
 	MainBoard Board
 
 	defaultServerPort = "9099"  //default port to serve app
 	DefaultMongoPort  = "27017" // default port for mongoDB connection
-	// defaultHost       = "localhost"
+	defaultHost       = "localhost"
 
 	conn = &Conn{}
 )
@@ -54,6 +57,9 @@ func main() {
 	defer End(start)
 	MainBoard.Date = &start
 
+	// if os.Getenv("SERVICE_NAME") != "" {
+	// 	serviceName = os.Getenv("SERVICE_NAME")
+	// }
 	serverPort, set := os.LookupEnv("serverPort")
 	if !set {
 		LogToFile("serverPort env wasn't set, default is 9090.")
@@ -80,10 +86,10 @@ func main() {
 	}
 
 	// Hardcoded data - @todo: add database
-	horses = append(horses, Horse{Name: "Monahen Boy", Color: "brown", Record: &Record{Wins: 8, Loses: 3}})
-	horses = append(horses, Horse{Name: "Dangerous", Color: "brown:white", Record: &Record{Wins: 7, Loses: 1}})
-	horses = append(horses, Horse{Name: "Black Beauty", Color: "black", Record: &Record{Wins: 4, Loses: 5}})
-	horses = append(horses, Horse{Name: "horse 4", Color: "black", Record: &Record{Wins: 4, Loses: 5}})
+	horses = append(horses, Horse{Name: "Monahen Boy", Color: "brown", Record: &Record{Wins: 8, Losses: 3}})
+	horses = append(horses, Horse{Name: "Dangerous", Color: "brown:white", Record: &Record{Wins: 7, Losses: 1}})
+	horses = append(horses, Horse{Name: "Black Beauty", Color: "black", Record: &Record{Wins: 4, Losses: 5}})
+	horses = append(horses, Horse{Name: "horse 4", Color: "black", Record: &Record{Wins: 4, Losses: 5}})
 
 	log.Printf("🌏 set to listen on port: %v", serverPort)
 	portInfo := fmt.Sprintf("set to listen on port: %v", serverPort)
