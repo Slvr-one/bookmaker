@@ -1,5 +1,8 @@
 # bookmaker_app:
 
+This is a custom app I build from scratch in golang,
+while self learning the inner working of this amaizing coding experience of a language.
+
 This app was designed as a simple web server for some minimal bookmaking, aka gambling.
 It allows investors to participate in various events.
 The app is connected to a MongoDB database for persistancy between events.
@@ -56,15 +59,11 @@ While Implementing:
 
 ## Tech Stack
 
-**Client:** HTML, CSS, Bootstrap, JS, Nginx
-
-**Server:** GoLang, MongoDB
-
-**CI/CD:** Jenkins / Github Actions
-
-**Cloud:** AWS / GCP
-
-**IAC:** Terraform, Ansible
+* **Client:** HTML, CSS, Bootstrap, JS, Nginx
+* **Server:** GoLang, MongoDB
+* **CI/CD:** Jenkins / Github Actions
+* **Cloud:** AWS / GCP
+* **IAC:** Terraform, Ansible
 
 
 ## 🔗 Links

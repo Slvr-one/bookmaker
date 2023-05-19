@@ -4,47 +4,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"time"
-
-	// "html/template"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 
-	// "time"
-
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
 	"rsc.io/quote"
-
-	// "gopkg.in/mgo.v2/bson"
-	// "rsc.io/quote"
-	"github.com/gin-gonic/gin"
-	// "go.opentelemetry.io/otel"
-	// "go.opentelemetry.io/otel/propagation"
-	// "go.opentelemetry.io/otel/trace"
 )
 
 // welcom - html
 func Welcom(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
-	// ctx.Writer.Header().Set("Content-Type", "text/html")
-	// ctx.Writer.Header().Set("Accept-Charset","utf-8")
-
-	// ctx.Writer.Header().Set("Cache-Control", "no-cache")
-	// ctx.Writer.Header().Set("Cache-Control","no-cache, no-store, must-revalidate")
-
-	// ctx.Writer.Header().Set("Pragma","no-cache")
-	// ctx.Writer.Header().Set("Expires","0")
-	// ctx.Writer.Header().Set("Access-Control-Allow-Origin","*")
-	// ctx.Writer.Header().Set("Access-Control-Allow-Headers","Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
-	// ctx.Writer.Header().Set("Access-Control-Allow-Methods","POST, GET, OPTIONS, PUT, DELETE")
-	// ctx.Writer.Header().Set("Access-Control-Expose-Headers","Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
-	// ctx.Writer.Header().Set("Access-Control-Allow-Credentials","true")
-	// ctx.Writer.Header().Set("Content-Encoding", "gzip")
-	// ctx.Writer.Header().Set("Connection", "keep-alive")
-
-	// fmt.Fprintf(ctx.Writer, Html)
 
 	tpl := template.Must(template.ParseFiles("templates/index2.html"))
 	dt := time.Now()
@@ -67,43 +40,6 @@ func Health(ctx *gin.Context) {
 	ctx.Writer.Write([]byte("<h3 style='color: steelblue'>Got Health</h3>"))
 
 }
-
-// func httpErrorBadRequest(err error, ctx *gin.Context) {
-// 	httpError(err, ctx, http.StatusBadRequest)
-// }
-
-// func httpErrorInternalServerError(err error, ctx *gin.Context) {
-// 	httpError(err, ctx, http.StatusInternalServerError)
-// }
-
-// func httpError(err error, ctx *gin.Context, status int) {
-// 	log.Println(err.Error())
-// 	ctx.String(status, err.Error())
-// }
-
-// func pingHandler(ctx *gin.Context) {
-// 	req := resty.New().R().SetHeader("Content-Type", "application/text")
-// 	otelCtx := ctx.Request.Context()
-// 	span := trace.SpanFromContext(otelCtx)
-// 	defer span.End()
-// 	otel.GetTextMapPropagator().Inject(otelCtx, propagation.HeaderCarrier(req.Header))
-// 	url := ctx.Query("url")
-// 	if len(url) == 0 {
-// 		url = os.Getenv("PING_URL")
-// 		if len(url) == 0 {
-// 			httpErrorBadRequest(errors.New("url is empty"), ctx)
-// 			return
-// 		}
-// 	}
-// 	log.Printf("Sending a ping to %s", url)
-// 	resp, err := req.Get(url)
-// 	if err != nil {
-// 		httpErrorBadRequest(err, ctx)
-// 		return
-// 	}
-// 	log.Println(resp.String())
-// 	ctx.String(http.StatusOK, resp.String())
-// }
 
 // for monitor "OK" loop
 func Ping(host string, port int) string {
@@ -218,11 +154,11 @@ func DeleteHorse(ctx *gin.Context) {
 
 	for i, horse := range horses {
 		if horse.Name == horseName {
-			// append() adds elements to a slice, but in this case, its used to remove an element:
-			// The [:i] notation denotes that all the elements before the i-th index are included,
-			// while [i+1:] denotes that all the elements after the i-th index are included.
-			// By combining these two notations with the ellipsis(...), the horses slice is effectively modified to exclude the i-th element.
-			// note that the original slice is not modified; rather, a new slice is created missing the i-th element.
+			/* append() adds elements to a slice, but in this case, its used to remove an element:
+			The [:i] notation denotes that all the elements before the i-th index are included,
+			while [i+1:] denotes that all the elements after the i-th index are included.
+			By combining these two notations with the ellipsis(...), the horses slice is effectively modified to exclude the i-th element.
+			note that the original slice is not modified; rather, a new slice is created missing the i-th element. */
 			horses = append(horses[:i], horses[i+1:]...)
 			break
 		}
@@ -231,7 +167,6 @@ func DeleteHorse(ctx *gin.Context) {
 }
 
 // fetch horse by name
-// ctx.Writer http.ResponseWriter, r *http.Request
 func GetHorse(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "application/json")
 
@@ -388,6 +323,7 @@ func Invest(ctx *gin.Context) {
 	// ***
 	amountPositive := false
 
+	// TODO bet check should rely on id checking but now id is randomized.
 	// check if the amount is a number [or strconv.Atoi() the param (commented above)]
 	// amountIsNumber := false
 	// amountInt, err := fmt.Sscanf(investment, "%d")
@@ -422,20 +358,6 @@ func Invest(ctx *gin.Context) {
 		LogToFile(msg)
 		return
 	}
-
-	// TODO bet check should rely on id checking but now id is randomized.
-	// // check if bet is already placed
-	// betExists := false
-	// for _, bet := range Bets {
-	// 	if bet.ID == betID {
-	// 		betExists = true
-	// 		break
-	// 	}
-	// }
-	// if betExists == true {
-	// 	fmt.Fprintf(w, "Bet already placed")
-	// 	return
-	// }
 
 	for _, h := range horses {
 		if h.Name == candidate.Name {
@@ -476,128 +398,3 @@ func Invest(ctx *gin.Context) {
 		fmt.Fprintf(ctx.Writer, "%v", MainBoard)
 	}
 }
-
-// func execute() {
-// 	if runtime.GOOS == "windows" {
-// 		fmt.Println("Can't Execute this on a windows machine")
-// 	}
-
-// 	out, err := exec.Command("ls", "-ltr").Output()
-// 	if err != nil {
-// 		fmt.Printf("%s", err)
-// 	}
-
-// 	fmt.Println("Command Successfully Executed")
-// 	output := string(out[:])
-// 	fmt.Println(output)
-// }
-
-// // func useCPU is a long loop for wasting cpu
-// func useCPU(w http.ResponseWriter, r *http.Request) {
-// 	count := 1
-
-// 	for i := 1; i <= 1000000; i++ {
-// 		count = i
-// 	}
-
-// 	fmt.Printf("count: %d", count)
-// 	w.Write([]byte(fmt.Sprint(count)))
-// }
-
-// func userHandler(ctx.Writer http.ResponseWriter, r *http.Request) {
-// 	id := r.URL.Query().Get("id")
-// 	if id == "" {
-// 		http.Error(ctx.Writer, "The id query parameter is missing", http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	fmt.Fprintf(ctx.Writer, "<h1>The user id is: %s</h1>", id)
-// }
-
-// func searchHandler(ctx.Writer http.ResponseWriter, r *http.Request) {
-// 	u, err := url.Parse(r.URL.String())
-
-// 	if err != nil {
-// 		http.Error(ctx.Writer, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	params := u.Query()
-// 	searchQuery := params.Get("q")
-// 	page := params.Get("page")
-
-// 	if page == "" {
-// 		page = "1"
-// 	}
-
-// 	fmt.Println("Search Query is: ", searchQuery)
-// 	fmt.Println("Page is: ", page)
-// }
-
-// func serve(w http.ResponseWriter, r *http.Request) {
-// 	env := map[string]string{}
-// 	for _, keyval := range os.Environ() {
-// 		keyval := strings.SplitN(keyval, "=", 2)
-// 		env[keyval[0]] = keyval[1]
-// 	}
-// 	bytes, err := json.Marshal(env)
-// 	if err != nil {
-// 		w.Write([]byte("{}"))
-// 		return
-// 	}
-// 	w.Write([]byte(bytes))
-// }
-
-// // ###
-// // ////////
-// // ###
-
-// // // a func to update a horse
-// // func updateHorse(ctx *gin.Context) {
-
-// // 	// // check if the horse exists
-// // 	// horseExists := false
-// // 	// for _, horse := range horses {
-// // 	// 	if horse.Name == horseName {
-// // 	// 		horseExists = true
-// // 	// 		break
-
-// // 	// 	}
-// // 	// }
-// // 	// if horseExists == false {
-// // 	// 	fmt.Fprintf(w, "Horse does not exist")
-// // 	// 	return
-// // 	// }
-
-// // }
-
-// // a func to get the static assets
-// func staticHandler() http.Handler {
-// 	return http.FileServer(http.Dir("./static"))
-// }
-
-// // LogRequest -> logs req info
-// func LogRequest(handler http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(ctx *gin.Context) {
-// 		color.Yellow("%s %s %s\n", r.RemoteAddr, r.Method, r.URL)
-// 		handler.ServeHTTP(w, r)
-// 	})
-// }
-
-// // removeBets remove the occurrences of an element from a slice, return the new slice
-// func removeBets(slice []string, elem string) []string {
-// 	// Create a new slice to store the result
-// 	newSlice := make([]string, 0, len(slice))
-// 	// Loop over the elements in the original slice
-// 	for _, value := range slice {
-// 		// If the element is not the one to remove, add it to the new slice
-// 		if value != elem {
-// 			newSlice = append(newSlice, value)
-// 		}
-// 	}
-// 	return newSlice
-// }
-
-// func Status(ctx *gin.Context) {
-// 	ctx.Writer.Write([]byte("API is up and running"))
-// }
