@@ -1,22 +1,20 @@
-FROM golang:1.20-bullseye as build
-# FROM golang:1.14-alpine as build
+FROM golang:1.20-bullseye AS build
 # FROM cosmtrek/air
 
-#declare
-ENV port ${port:-5000}
-WORKDIR /app 
+ENV port ${port:-9090}
 
-RUN apt install git curl
+# WORKDIR /go/src/github.com/Slvr-one/bookmaker
+WORKDIR /app/
+
+RUN apt install git curl bash
 
 #copy dependencies
-COPY go.mod /app 
-COPY go.sum /app 
+COPY go.mod . 
+COPY go.sum .
 
-#install dependencies
-RUN go mod download
 # RUN go get github.com/githubnemo/CompileDaemon
 
-COPY ./app/* .
+COPY ./app/* ./
 
 # Unit tests
 # RUN CGO_ENABLED=0 go test -v
@@ -26,16 +24,20 @@ COPY ./app/* .
 # RUN curl -fLo install.sh https://raw.githubusercontent.com/cosmtrek/air/master/install.sh \  
 #     && chmod +x install.sh && sh install.sh && cp ./bin/air /bin/air
 
-RUN go build -o ./out/bookmaker .
+RUN go mod download \
+  && CGO_ENABLED=0 go build -a -installsuffix cgo -o ./bin/main .
+# ENTRYPOINT "sleep" "50"
 
 # ******************************************************* #
 
-FROM alpine:3.9 as runtime
-# WORKDIR /app 
-RUN apk add ca-certificates
-COPY --from=build /app/out/bookmaker /app/bookmaker
+FROM alpine:3.9 AS runtime
+# FROM alpine:latest  
+
+RUN apk add --no-cache rsyslog curl bash sudo ca-certificates
+WORKDIR /root/
+
+COPY --from=build /app/bin/main ./
 # COPY --from=build /app/static/ /app/static/
 
 EXPOSE ${port}
-# ENTRYPOINT [ "/app/bookmaker" ]
-# CMD [ "sleep" "inf" ]
+ENTRYPOINT ["./main"]

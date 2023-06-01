@@ -15,7 +15,7 @@ var (
 	horses    []Horse
 	MainBoard Board
 
-	defaultServerPort = "9099"  //default port to serve app
+	defaultServerPort = "9090"  //default port to serve app
 	DefaultMongoPort  = "27017" // default port for mongoDB connection
 	// defaultHost       = "localhost"
 
@@ -84,6 +84,7 @@ func main() {
 	// By default it serves on :8080 unless a
 	// PORT environment variable was defined.
 	if err := app.Run(); err != nil {
-		log.Fatal(err)
+		Check(err, "could'nt run app")
+		// log.Fatal(err)
 	}
 }

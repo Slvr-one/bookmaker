@@ -60,6 +60,7 @@ require (
 	google.golang.org/genproto v0.0.0-20210629200056-84d6f6074151 // indirect
 	google.golang.org/grpc v1.39.0 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/sampler v1.3.0 // indirect
 )

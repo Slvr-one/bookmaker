@@ -3,25 +3,12 @@
 This is a custom app I build from scratch in golang,
 while self learning the inner working of this amaizing coding experience of a language.
 
-This app was designed as a simple web server for some minimal bookmaking, aka gambling.
+This app was designed as a simple web server for some minimal bookmaking, aka gambling by defining several endpoints to handle HTTP requests.
+The program defines several structs to represent data, including Horse, Record, Person, and Bet.
 It allows investors to participate in various events.
 The app is connected to a MongoDB database for persistancy between events.
-Built with Go, utilining MongoDB, Nginx, Docker & Compose.
+Built with Go, utilizing MongoDB, Nginx, Docker & Compose.
 
-
-(comparison of popular REST API frameworks for Go development:
-
-Gin - A lightweight framework with fast performance and easy-to-use routing capabilities. It also has a built-in middleware system for handling common tasks like logging and error handling.
-
-Echo - A high-performance framework with a simple and intuitive API. It has features like middleware, routing, and error handling built-in, making it easy to build robust APIs quickly.
-
-Chi - A lightweight and fast framework that offers a lot of flexibility in terms of routing and middleware. It also has a built-in logger and support for HTTP/2.
-
-Beego - A full-featured framework with built-in support for ORM, caching, and session management. It also has a built-in admin panel for managing your application.
-
-Gorilla - A toolkit for building web applications, including a router, middleware, and a set of handlers for common tasks like authentication and CSRF protection. It's not a full-fledged framework, but it's highly flexible and can be used to build custom solutions.
-
-Ultimately, the choice of framework comes down to personal preference and the specific needs of your project. Each of these frameworks has its own strengths and weaknesses, so it's important to evaluate them based on your project requirements and development style.)
 
 ## Breakdown:
 This app is part of my Portfolio project, which includes
@@ -35,11 +22,34 @@ While Implementing:
     Modularity
     Automation
     
+##  initializing a MongoDB client, connect to a MongoDB database, and insert multiple documents into a collection/table:
+
+-- The initMongoDB function initializes a MongoDB client with the URL "mongodb://localhost:27017", connects to the MongoDB database named "bookmaker", 
+-- creates a collection named "bets" in the "bookmaker" database,
+-- inserts three documents into the "bets" collection using the InsertMany method.
+-- Each document is a BSON document that consists of several fields, such as:
+    "fullName", 
+    "age", 
+    "amount", 
+    "profit". 
+
+-- The bson.D type is used to represent a BSON document in Go code. 
+-- After inserting the documents, the InsertedIDs field of the InsertManyResult object is printed to the console.
 
 ## Architecture:
 ![image](image.png)
 
 ## REST API REF:
+
+HTTP endpoints:
+
+-- "/" - A welcome page that displays the number of horses available and the current date and time.
+-- "/health" - A health check endpoint that returns a simple message to indicate that the server is up and running.
+-- "/horses" - An endpoint that returns the number of horses available.
+-- "/horses/{name}" - An endpoint that returns information about a specific horse by name.
+-- "/horses/{name}/bet/{amount}" - An endpoint that allows the user to place a bet on a specific horse.
+-- The program also defines several functions to handle these endpoints. The GetHorses function returns the number of horses available, the GetHorse function returns information about a specific horse, and the Invest function allows the user to place a bet on a specific horse. The main function initializes the web server and sets up the routing.
+
 
 | Path | Method | Description |
 | :-------- | :------- | :------- | 
@@ -54,19 +64,13 @@ While Implementing:
 
 
 
-
-
-
 ## Tech Stack
 
-* **Client:** HTML, CSS, Bootstrap, JS, Nginx
-* **Server:** GoLang, MongoDB
-* **CI/CD:** Jenkins / Github Actions
-* **Cloud:** AWS / GCP
-* **IAC:** Terraform, Ansible
-
+Refer to my [main portfolio's repo][portfolio-repo] [Infra.md file][portfolio-infra].
 
 ## 🔗 Links
 
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/dvir-gross-929252224/)
 
+[portfolio-repo]: https://github.com/Slvr-one/k8s-dev
+[portfolio-infra]: https://github.com/Slvr-one/k8s-dev/blob/main/Infra.md

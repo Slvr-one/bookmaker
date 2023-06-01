@@ -26,21 +26,25 @@ type Person struct {
 	UserName string `json:"user" bson:"user"`
 	Pass     string `json:"pass" bson:"pass"`
 
-	FirstName string `json:"firstname" bson:"firstname"`
-	LastName  string `json:"lastname"  bson:"lasttname"`
+	FirstName string `json:"first_name" bson:"first_name"`
+	LastName  string `json:"last_name"  bson:"last_name"`
 	Age       int    `json:"age"  bson:"age"`
 	// DOB       string `json:"dob"`
 	// Address   string `json:"address"`
 }
 
 type Bet struct {
-	ID       string  `json:"id"       bson:"_id"`    //int?
-	Amount   uint    `json:"amount"   bson:"amount"` //stake
-	Profit   int     `json:"profit"   bson:"profit"`
-	Investor *Person `json:"investor" bson:"investor"`
+	// ID primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+
+	ID        string  `json:"id"       bson:"_id"`    //int?
+	Amount    uint    `json:"amount"   bson:"amount"` //stake
+	Profit    int     `json:"profit"   bson:"profit"`
+	Investor  *Person `json:"investor" bson:"investor"`
+	HorseID   int64
+	CreatedAt time.Time `json:"created_at" bson:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 	// Date     time.Time `json:"date" bson:"date"`
 	// Status   string  `json:"status" bson:"status"`
-
 }
 
 type Board struct {
@@ -57,4 +61,11 @@ type Conn struct {
 
 // type DatabaseCollections struct {
 // 	Bets *mongo.Collection
+// }
+
+// type Search struct {
+// 	Query      string
+// 	NextPage   int
+// 	TotalPages int
+// 	Results    *news.Results
 // }

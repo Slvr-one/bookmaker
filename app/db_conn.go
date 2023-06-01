@@ -29,12 +29,12 @@ var (
 // db = SqlDB()
 )
 
-func MongoDB(mongodbUrl string) *mongo.Client {
+func MongoDB(mongodbUri string) (*mongo.Client, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	//init mongo client
-	clientOptions := options.Client().ApplyURI(mongodbUrl)
+	clientOptions := options.Client().ApplyURI(mongodbUri)
 	// clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb:%v", mongoPath))
 
 	// conn = &Conn{}
@@ -104,7 +104,7 @@ func MongoDB(mongodbUrl string) *mongo.Client {
 	// }
 	// fmt.Printf("%s\n", jsonData)
 
-	return client
+	return client, connErr
 }
 
 func SqlDB() *sql.DB {

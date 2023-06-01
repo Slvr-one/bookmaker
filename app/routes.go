@@ -45,9 +45,31 @@ func InitR() *gin.Engine {
 
 	// router.GET("/invest/:investor/:horse/:amount", Invest)
 
+	router.Static("/assets", "./assets")
+	// router.StaticFS("/more_static", http.Dir("my_file_system"))
+	// router.StaticFile("/favicon.ico", "./resources/favicon.ico")
+
+	// router.GET("/*path", func(ctx *gin.Context) {
+	// 	// read from file
+	// 	data, err := os.ReadFile("/path/to/file")
+	// 	Check(err, "err on reading file for serving")
+	// 	ct := "Content-Type"
+	// 	switch path.Ext(ctx.Request.URL.Path) {
+	// 	case ".html":
+	// 		ctx.Header(ct, "text/html")
+	// 	case ".css":
+	// 		ctx.Header(ct, "text/css")
+	// 	case ".js":
+	// 		ctx.Header(ct, "application/javascript")
+	// 		// ...
+	// 	}
+	// 	_, _ = ctx.Writer.Write(data)
+	// })
+
 	return router
 }
 
+// customMiddleware takes a handler function as its argument and returns a new function that wraps the handler function
 func customMiddleware(handler middleware.Handler) middleware.Handler {
 	return func(ctx context.Context, req interface{}) (reply interface{}, err error) {
 		if tr, ok := transport.FromServerContext(ctx); ok {
