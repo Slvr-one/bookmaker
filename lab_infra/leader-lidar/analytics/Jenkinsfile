@@ -1,0 +1,113 @@
+pipeline { /** analitics div, package */
+    options { /** webhooked, (mostly a copy of telemetry)*/
+        timestamps()
+        timeout(time:5, unit:'MINUTES')
+    }
+
+    agent any
+    environment {
+        MSG = sh (script: "git log -1 | tail -1 | grep 'e2e'", returnStatus: true)
+    }
+    tools { 
+        maven 'maven-3.6.2'
+        jdk 'jdk-8'
+    }
+    stages {
+        stage("1 - build") {
+            when {
+                expression { BRANCH_NAME =~ "feature/*" || BRANCH_NAME == "main" }
+            }
+            steps {
+                echo "---- build / package ----"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s clean package" 
+                }
+            }
+        }
+        stage("2 - UT") {
+            when { branch "feature/*" }
+            steps {
+                echo "---- UT ----"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:simulator:99-SNAPSHOT:jar -Ddest=simulator.jar"
+                    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:telemetry:99-SNAPSHOT:jar -Ddest=telemetry.jar"
+                }
+                sh "mv tests-sanity.txt tests.txt"
+                sh "cp ./target/analytics-*.jar analytics.jar"
+                sh "java -cp simulator.jar:analytics.jar:telemetry.jar com.lidar.simulation.Simulator"
+            }
+        }
+        stage("3 - E2E") {// if branch is main, also if feature and e2e is in commit msg
+            when {
+            //     expression { 
+            //         BRANCH_NAME == "main" || BRANCH_NAME =~ "feature/*" && changelog '.*^\\[#e2e\\] .+$' 
+            //     }
+                anyOf {
+                    expression { BRANCH_NAME == "main" }
+                    expression { BRANCH_NAME =~ "feature/*" && MSG == '0'} 
+                }
+            }
+            steps {
+                echo "---- E2E tests ----"// analytics:99-SNAPSHOT
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:simulator:99-SNAPSHOT:jar -Ddest=simulator.jar"
+                    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:telemetry:99-SNAPSHOT:jar -Ddest=telemetry.jar"
+                }
+                sh "mv tests-full.txt tests.txt"
+                sh "cp ./target/analytics-*.jar analytics.jar"
+                sh "java -cp simulator.jar:analytics.jar:telemetry.jar com.lidar.simulation.Simulator"
+            }
+        }
+        stage("4 - tag") {
+            when { branch "release/*" }
+            steps {
+                echo "---- tagging for ${BRANCH_NAME} branch ----"
+                sshagent(['gitlab_get']) {
+                    sh "git fetch -t || true"
+                }
+                script {
+                    VER = BRANCH_NAME.split('\\/')[1]
+                    HIGHEST = sh(script: "git tag -l --sort=v:refname \"${VER}.*\" | tail -1", returnStdout: true).trim()
+                    if (HIGHEST.isEmpty()) {
+                        PATCH = ".0"
+                        LATEST = VER + PATCH
+                    } else {
+                        LATEST = HIGHEST.split('\\.')
+                        LATEST[2] = LATEST[2].toInteger() + 1
+                        LATEST = LATEST.join('.')
+                    }
+                    sh """
+                        mvn versions:set -DnewVersion=${LATEST}
+                        mvn versions:commit 
+                    """ /** set the version in maven terms(for snapshot artifact)
+                        versions:commit goal will remove the backup copy
+                        while the versions:revert goal will restore the backup copy. */
+                    sh "git clean -xf && git tag $LATEST"
+                    sshagent(['gitlab_get']) {
+                        sh "git push --tags"
+                }
+                }
+            }
+        }
+        stage("5 - deploy") {
+            when { expression { BRANCH_NAME =~  "release/*" || BRANCH_NAME == "main" } }
+            steps {
+                echo "---- deploy to arti ----"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s clean deploy -DskipTests" }
+            }
+        }
+    }
+    post {
+        success {
+            echo "its a success!"
+        }
+        failure {
+            echo "its a failure.."
+        }
+        always {
+            echo "will get this done"
+            //cleanWs() //commented for testing
+        }
+    }
+}

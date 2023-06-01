@@ -1,0 +1,93 @@
+pipeline { /** product div*/
+    options { /** for release only */
+        timestamps()
+        timeout(time:3, unit:'MINUTES')
+    }
+
+    agent any
+    environment {
+        LATEST = "99-SNAPSHOT"
+    }
+    tools { 
+        maven 'maven-3.6.2'
+        jdk 'jdk-8'
+    }
+    stages {
+        stage("1 - maven semver") {
+            when { branch "release/*" }
+            steps {
+                echo "---- tagging for ${BRANCH_NAME} branch ----"
+                //withCredentials([gitUsernamePassword(credentialsId: 'gitlab_get')]) {
+                withCredentials([gitUsernamePassword(credentialsId: 'jenkins_gl_user', gitToolName: 'Default')]) {
+                    sh "git fetch -t || true" //in sinc with romote repo
+                }
+                script {//get latest tag commited to current branch, increment patch by 1 if branch exist(therefor has a latest), otherwise first patch is ".0"
+                    VER = BRANCH_NAME.split('\\/')[1]
+                    HIGHEST = sh(script: "git tag -l --sort=v:refname \"${VER}.*\" | tail -1", returnStdout: true).trim()
+                    if (HIGHEST.isEmpty()) {
+                        PATCH = ".0"
+                        LATEST = VER + PATCH
+                    } else {
+                        LATEST = HIGHEST.split('\\.')
+                        LATEST[2] = LATEST[2].toInteger() + 1
+                        LATEST = LATEST.join('.')
+                    }
+                    sh "mvn versions:set -DnewVersion=${LATEST}"
+                    sh "mvn dependency:list"
+                    //sh "mvn versions:commit"// to remove the backup copy while the versions:revert goal will restore the backup copy
+                }
+            }
+        }
+        stage("2 - Build and unit test") {
+            when { branch "release/*" }
+            steps {
+                sh "mvn clean package"
+            }
+        }
+        stage("3 - E2E tests") {
+            when { branch "release/*" }
+            steps {
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    // sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:telemetry:$LATEST:jar -Ddest=telemetry.jar"
+                    // sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:analytics:$LATEST:jar -Ddest=analytics.jar"
+                    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:simulator:$LATEST:jar -Ddest=simulator.jar"
+                    sh "mvn -s $maven_s install -DgroupId=com.lidar -DartifactId=telemetry"
+                    
+                }
+                sh "unzip ./target/leader-*.zip"
+                sh "mv tests-full.txt tests.txt"
+
+                sh "java -cp simulator.jar:analytics.jar:telemetry.jar com.lidar.simulation.Simulator"
+            }
+        }
+        stage("4 - Publish to artifactory") {
+            when { branch "release/*" }
+            steps {
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    //sh "mvn deploy -DskipTests"
+                    sh "mvn -s $maven_s deploy"
+                }
+            }
+        }
+        stage("5 - tag to repo") {
+            when { branch "release/*" }
+            steps {
+                sh "git clean && git tag $LATEST"
+                sh "git push --tags"
+            }
+        }
+
+    }
+     post {
+        success {
+            echo "its a success!"
+        }
+        failure {
+            echo "its a failure.."
+        }
+        always {
+            echo "will get this done"
+            cleanWs()
+        }
+    }
+}

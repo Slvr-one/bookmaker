@@ -1,0 +1,64 @@
+x-defaut: &def
+  networks:
+      - 'main'
+  tty: true
+  restart: unless-stopped
+#
+services:
+  jenkins:
+    <<: *def
+    container_name: jenkins
+    image: '839821061981.dkr.ecr.eu-central-1.amazonaws.com/jenkins:1.1.0'
+    ports:
+      - '1001:8080'
+    volumes:
+      - '~/LAB/jenkins/data:/var/jenkins_home'
+      - '~/LAB/jenkins/.m2:/root/.m2'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+  gitlab:
+    <<: *def
+    container_name: gitlab
+    image: 'gitlab/gitlab-ce:15.5.1-ce.0'
+    ports:
+      - '1002:80'
+      - '22:22'
+    volumes:
+      - '~/LAB/gitlab/conf:/etc/gitlab' 
+      - '~/LAB/gitlab/logs:/var/log/gitlab' 
+      - '~/LAB/gitlab/data:/var/opt/gitlab' 
+    # shm_size: '2gb'
+#
+  artifactory:
+    <<: *def
+    container_name: artifactory
+    image: 'docker.bintray.io/jfrog/artifactory-oss:6.23.13'
+    #image: releases-docker.jfrog.io/jfrog/artifactory-oss:latest
+    #image: docker.bintray.io/jfrog/artifactory-oss
+    #image: docker.bintray.io/jfrog/artifactory-jcr:latest
+    #image: jfrog-docker-reg2.bintray.io/jfrog/artifactory-oss
+    ports:
+      - 1003:8081
+    #  - 1004:8082
+    volumes:
+      - 'artifactory_data:/var/opt/jfrog/artifactory'
+     
+  dev:
+    <<: *def
+    container_name: dev
+    image: 'maven:3.8.7-openjdk-18-slim'
+    command: "sleep inf"
+    volumes:
+      - '~/LAB/dev/.m2:/root/.m2/'
+      - './:/dvir'
+      - '~/LAB/dev/_ssh:/root/.ssh'
+    working_dir: /lab
+
+networks:
+  main:
+    name: main
+
+volumes:
+  # dev_ssh: 
+  #   name: dev_ssh
+  artifactory_data:
+    name: artifactory_data

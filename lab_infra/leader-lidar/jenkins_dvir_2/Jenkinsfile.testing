@@ -1,0 +1,80 @@
+pipeline { /** testing div*/
+    options { /** webhooked, master(main) only */
+        timestamps()
+        timeout(time:5, unit:'MINUTES')
+    }
+
+    agent any
+    environment {
+        LATEST = "99-SNAPSHOT"
+    }
+    tools { 
+        maven 'maven-3.6.2'
+        jdk 'jdk-8'
+    }
+    stages {
+        stage("1 - compile") {//redundent
+            when { branch "main" }
+            steps {
+                echo "---- compile, for ut and package ----"
+                echo "branch name is ${BRANCH_NAME}"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s clean compile" }
+            }
+        }
+        stage("2 - UT") {
+            when { branch "main" }
+            steps {
+                echo "---- unit testing ----"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s clean test" }
+            }
+        }
+        stage("3 - build") {
+            when { branch "main" }
+            steps {
+                echo "---- build the artifact ----"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s clean package"
+                }
+            }
+        }
+        stage("4 - E2E") {
+            when { branch "main" }
+            steps {
+                //configFileProvider([configFile(fileId: 'settings', variable: 'maven_s')]) {
+                //    sh "mvn -s $maven_s clean verify" }
+                echo "-----E2E-----"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                //    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:simulator:$LATEST:jar -Ddest=simulator.jar"
+                    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:analytics:99-SNAPSHOT:jar -Ddest=analytics.jar"
+                    sh "mvn -s $maven_s dependency:get -Dartifact=com.lidar:telemetry:99-SNAPSHOT:jar -Ddest=telemetry.jar"
+
+                }
+                sh "mv tests-full.txt tests.txt"
+                sh "mv ./target/*.jar simulator.jar"
+                sh "java -cp simulator.jar:analytics.jar:telemetry.jar com.lidar.simulation.Simulator"
+            }
+        }
+        stage("5 - deploy") {
+            when { branch "main" }
+            steps {
+                echo "---- stage - 5 deploy to arti ----"
+                configFileProvider([configFile(fileId: 'maven_s', variable: 'maven_s')]) {
+                    sh "mvn -s $maven_s clean deploy -DskipTests" }
+            }
+        }
+    }
+    post {
+        success {
+            echo "its a success!"
+        }
+        failure {
+            echo "its a failure.."
+        }
+        always {
+            echo "will get this done"
+            cleanWs()
+        }
+    }
+}

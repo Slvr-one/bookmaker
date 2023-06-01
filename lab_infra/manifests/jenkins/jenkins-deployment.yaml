@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: jenkins
+  name: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: jenkins
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/main: "true"
+        io.kompose.service: jenkins
+    spec:
+      containers:
+        - image: 839821061981.dkr.ecr.eu-central-1.amazonaws.com/jenkins:1.1.0
+          name: jenkins
+          ports:
+            - containerPort: 8080
+          resources: {}
+          tty: true
+          volumeMounts:
+            - mountPath: /var/jenkins_home
+              name: jenkins-claim0
+            - mountPath: /root/.m2
+              name: jenkins-claim1
+            - mountPath: /var/run/docker.sock
+              name: jenkins-claim2
+      restartPolicy: Always
+      volumes:
+        - name: jenkins-claim0
+          persistentVolumeClaim:
+            claimName: jenkins-claim0
+        - name: jenkins-claim1
+          persistentVolumeClaim:
+            claimName: jenkins-claim1
+        - name: jenkins-claim2
+          persistentVolumeClaim:
+            claimName: jenkins-claim2
+status: {}
