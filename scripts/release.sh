@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eux
+set -euxo pipefail
 
 #for mongo secret:
 # kubectl create secret generic mongodb-credentials \
@@ -38,6 +38,7 @@ kubectl create secret docker-registry regcred \
   # --ignore-not-found=true
 
 ./scripts/dc_lab.sh
+./scripts/get_pass.sh
 
 # ./scripts/dc_app.sh
 

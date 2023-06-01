@@ -6,21 +6,18 @@ x-def: &def
   tty: true
   restart: unless-stopped
 
-
-# version: '3.3'
 services:
   app:
     container_name: 'bookmaker'
-    # depends_on:
-    #   - 'db'
+    depends_on:
+      - 'db'
     build: .
-    # image: bookmaker ##"514095112279.dkr.ecr.eu-central-1.amazonaws.com/bookmaker:latest"  
     # ports:
     #   - '9090:9090'
     volumes:
       - ./app:/app
     networks:
-      - main  
+      - app  
       - db
     <<: *def
 
@@ -38,9 +35,8 @@ services:
       # - './app/static:/usr/share/nginx/html'
       # - './nginx/dev.conf.d:/etc/nginx/nginx.conf'
     networks: 
-      - main
+      - app
     <<: *def
-
 
   db:
     image: 'mongo:latest'
@@ -51,8 +47,8 @@ services:
       - db
   
 networks:
-  main:
-    name: main
+  app:
+    name: app
   db:
     name: db
   

@@ -1,4 +1,6 @@
 #!/bin/bash
+set -euxo pipefail
+
 #run after init, to exec from containers
 jenpass=$(docker compose exec jenkins \
 cat /var/jenkins_home/secrets/initialAdminPassword)

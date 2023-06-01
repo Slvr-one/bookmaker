@@ -3,11 +3,15 @@ x-defaut: &def
       - 'main'
   tty: true
   restart: unless-stopped
-#
+
 services:
+
   jenkins:
     <<: *def
     container_name: jenkins
+    depends_on:
+      - gitlab
+      - artifactory
     image: '839821061981.dkr.ecr.eu-central-1.amazonaws.com/jenkins:1.1.0'
     ports:
       - '1001:8080'
@@ -15,6 +19,7 @@ services:
       - '~/LAB/jenkins/data:/var/jenkins_home'
       - '~/LAB/jenkins/.m2:/root/.m2'
       - '/var/run/docker.sock:/var/run/docker.sock'
+
   gitlab:
     <<: *def
     container_name: gitlab
@@ -27,7 +32,7 @@ services:
       - '~/LAB/gitlab/logs:/var/log/gitlab' 
       - '~/LAB/gitlab/data:/var/opt/gitlab' 
     # shm_size: '2gb'
-#
+
   artifactory:
     <<: *def
     container_name: artifactory
