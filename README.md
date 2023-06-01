@@ -72,5 +72,5 @@ Refer to my [main portfolio's repo][portfolio-repo] [Infra.md file][portfolio-in
 
 [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/dvir-gross-929252224/)
 
-[portfolio-repo]: https://github.com/Slvr-one/k8s-dev
-[portfolio-infra]: https://github.com/Slvr-one/k8s-dev/blob/main/Infra.md
+[portfolio-repo]: https://github.com/Slvr-one/TheGarrison
+[portfolio-infra]: https://github.com/Slvr-one/TheGarrison/blob/main/Infra.md

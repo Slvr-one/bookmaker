@@ -15,8 +15,8 @@ services:
     #   - 'db'
     build: .
     # image: bookmaker ##"514095112279.dkr.ecr.eu-central-1.amazonaws.com/bookmaker:latest"  
-    ports:
-      - '9090:9090'
+    # ports:
+    #   - '9090:9090'
     volumes:
       - ./app:/app
     networks:

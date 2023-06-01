@@ -8,12 +8,16 @@ set -eux
 
 # helm install my-api-server . \
 #     --set mongoDbUrl=mongodb://dviross:secretpass@mongodb-service.default.svc.cluster.local:27017/mydb
-name=$1
-tag=$2
+export name=$1
+export tag=$2
 
-acc="839821061981"
-region="eu-central-1" #frankfurt
-repo="$acc.dkr.ecr.$region.amazonaws.com"
+export work="./"
+# export repo="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+export lab="./lab_infra" # "~/_workplace/portfolio/infra/lab/" 
+
+export acc="839821061981"
+export region="eu-central-1" #frankfurt
+export repo="$acc.dkr.ecr.$region.amazonaws.com"
 
 #install awscli(.sh)
 
@@ -26,13 +30,25 @@ docker build -t $name .
 docker tag $name:latest $repo/$name:$tag
 docker push $repo/$name:$tag
 
-
 kubectl create secret docker-registry regcred \
   --docker-server=${acc}.dkr.ecr.${region}.amazonaws.com \
   --docker-username=AWS \
   --docker-password=$(aws ecr get-login-password) \
-  --namespace=app
-  
+  --namespace=app || true # --dry-run=client -o yaml | kubectl create -f - \
+  # --ignore-not-found=true
+
+./scripts/dc_lab.sh
+
+# ./scripts/dc_app.sh
+
+#deploy testing lab (Jenkins server, Gitlab server, Artifactory and maven development environment):
+cd $lab
+docker compose down && echo -e "\n ###down### \n"
+
+docker compose up --build -d && echo -e "\n ###up### \n"
+cd -
+
+
 # kubectl create secret docker-registry regcred \
 #   --docker-server=839821061981.dkr.ecr.eu-central-1.amazonaws.com \
 #   --docker-username=AWS \
