@@ -1,14 +1,15 @@
-# bookmaker_app:
+# Bookmaker App:
 
 This is a custom app I build from scratch in golang,
 while self learning the inner working of this amaizing coding experience of a language.
 
-This app was designed as a simple web server for some minimal bookmaking, aka gambling by defining several endpoints to handle HTTP requests.
-The program defines several structs to represent data, including Horse, Record, Person, and Bet.
+This app was designed as a simple web server for some minimal bookmaking, aka gambling.
+by defining several endpoints to handle HTTP requests.
+The program defines several structs to represent data, including:
+Horse, Record, Person, and Bet.
 It allows investors to participate in various events.
 The app is connected to a MongoDB database for persistancy between events.
 Built with Go, utilizing MongoDB, Nginx, Docker & Compose.
-
 
 ## Breakdown:
 This app is part of my Portfolio project, which includes
@@ -24,10 +25,14 @@ While Implementing:
     
 ## getting started ->
 
-1. Clone the [app repo][bmrepo]: 
-> `git clone https://github.com/Slvr-one/bookmaker.git bm && cd bm`
+1. Clone this [repo][bmrepo]: 
+> `git clone https://github.com/Slvr-one/bookmaker.git && cd bookmaker`
 2. build sources into an image: `./scripts/dockerize.sh`
 3. release the image to a private repo: `./scripts/release.sh` 
+<details>
+<summary>note!</summary>
+[make sure to set vars in the scripts to fit yourself]
+</details>
 
 ##  initializing a MongoDB client, connect to a MongoDB database, and insert multiple documents into a collection/table:
 
@@ -48,15 +53,14 @@ While Implementing:
 
 ## REST API REF:
 
-HTTP endpoints:
+<!-- HTTP endpoints:
 
 -- "/" - A welcome page that displays the number of horses available and the current date and time.
 -- "/health" - A health check endpoint that returns a simple message to indicate that the server is up and running.
 -- "/horses" - An endpoint that returns the number of horses available.
 -- "/horses/{name}" - An endpoint that returns information about a specific horse by name.
 -- "/horses/{name}/bet/{amount}" - An endpoint that allows the user to place a bet on a specific horse.
--- The program also defines several functions to handle these endpoints. The GetHorses function returns the number of horses available, the GetHorse function returns information about a specific horse, and the Invest function allows the user to place a bet on a specific horse. The main function initializes the web server and sets up the routing.
-
+-- The program also defines several functions to handle these endpoints. The GetHorses function returns the number of horses available, the GetHorse function returns information about a specific horse, and the Invest function allows the user to place a bet on a specific horse. The main function initializes the web server and sets up the routing. -->
 
 | Path | Method | Description |
 | :-------- | :------- | :------- | 
@@ -81,3 +85,5 @@ Refer to my [main portfolio's repo][portfolio-repo] [Infra.md file][portfolio-in
 
 [portfolio-repo]: https://github.com/Slvr-one/TheGarrison
 [portfolio-infra]: https://github.com/Slvr-one/TheGarrison/blob/main/Infra.md
+
+[bmrepo]: https://github.com/Slvr-one/bookmaker
