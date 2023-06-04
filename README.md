@@ -60,8 +60,8 @@ While Implementing:
 | `/health` | `GET` | `Health check endpoint, returns 'GOT HEALTH'. indicate the server is up.` |
 | `/metrics` | `GET` | `for monitoring purposes` |
 | `/LH` | `GET` | `list all horses available` |
-| `/GH/{name}` | `GET` | `list a specific horse detail` |
-| `/UH/{name}` | `PUT` | `update a specific horse by name` |
+| `/GH/{name}` | `GET` | `list a specific horse's details` |
+| `/UH/{name}` | `PUT` | `update a specific horse's details, by name` |
 | `/invest/{horse}/{amount}` | `UPDATE` | `Allows the user to place a bet on a specific horse.` |
 
 The program also defines several functions to handle these endpoints.
