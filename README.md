@@ -22,6 +22,13 @@ While Implementing:
     Modularity
     Automation
     
+## getting started ->
+
+1. Clone the [app repo][bmrepo]: 
+> `git clone https://github.com/Slvr-one/bookmaker.git bm && cd bm`
+2. build sources into an image: `./scripts/dockerize.sh`
+3. release the image to a private repo: `./scripts/release.sh` 
+
 ##  initializing a MongoDB client, connect to a MongoDB database, and insert multiple documents into a collection/table:
 
 -- The initMongoDB function initializes a MongoDB client with the URL "mongodb://localhost:27017", connects to the MongoDB database named "bookmaker", 
