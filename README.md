@@ -49,7 +49,7 @@ While Implementing:
 -- After inserting the documents, the InsertedIDs field of the InsertManyResult object is printed to the console.
 
 ## CI Pipeline:
-![image](app/assets/pics/architecture.png)
+![image](app/assets/pics/pipeline.png)
 
 ## REST API REF:
 
