@@ -49,15 +49,15 @@ While Implementing:
 -- After inserting the documents, the InsertedIDs field of the InsertManyResult object is printed to the console.
 
 ## Architecture:
-![image](image.png)
+![image](app/assets/pics/architecture.png)
 
 ## REST API REF:
 
 | Path | Method | Description |
 | :-------- | :------- | :------- | 
 | `/` | `GET` | `Welcome page, displays horses available, current date & time.`
-| `/assets` | `GET` | `images & html` |
-| `/health` | `GET` | ` Health check endpoint, returns 'GOT HEALTH', indicate server is up.` |
+| `/assets` | `GET` | `static content - html, css, js & images` |
+| `/health` | `GET` | `Health check endpoint, returns 'GOT HEALTH'. indicate the server is up.` |
 | `/metrics` | `GET` | `for monitoring purposes` |
 | `/LH` | `GET` | `list all horses available` |
 | `/GH/{name}` | `GET` | `list a specific horse detail` |

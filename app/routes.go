@@ -27,7 +27,7 @@ func InitR() *gin.Engine {
 	// Use Kratos middleware
 	router.Use(kgin.Middlewares(recovery.Recovery(), customMiddleware))
 
-	router.GET("/hello/:name", Welc)
+	// router.GET("/hello/:name", Welc)
 
 	// router.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	// router.Handle("/assets/", http.StripPrefix("/assets/", staticHandler()).Methods("GET")
