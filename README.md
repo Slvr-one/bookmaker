@@ -53,31 +53,25 @@ While Implementing:
 
 ## REST API REF:
 
-<!-- HTTP endpoints:
-
--- "/" - A welcome page that displays the number of horses available and the current date and time.
--- "/health" - A health check endpoint that returns a simple message to indicate that the server is up and running.
--- "/horses" - An endpoint that returns the number of horses available.
--- "/horses/{name}" - An endpoint that returns information about a specific horse by name.
--- "/horses/{name}/bet/{amount}" - An endpoint that allows the user to place a bet on a specific horse.
--- The program also defines several functions to handle these endpoints. The GetHorses function returns the number of horses available, the GetHorse function returns information about a specific horse, and the Invest function allows the user to place a bet on a specific horse. The main function initializes the web server and sets up the routing. -->
-
 | Path | Method | Description |
 | :-------- | :------- | :------- | 
-| `/home` | `GET` | `home page`
+| `/` | `GET` | `Welcome page, displays horses available, current date & time.`
 | `/assets` | `GET` | `images & html` |
-| `/health` | `GET` | `for health check` |
+| `/health` | `GET` | ` Health check endpoint, returns 'GOT HEALTH', indicate server is up.` |
 | `/metrics` | `GET` | `for monitoring purposes` |
-| `/LH` | `GET` | `list all available horses` |
+| `/LH` | `GET` | `list all horses available` |
 | `/GH/{name}` | `GET` | `list a specific horse detail` |
 | `/UH/{name}` | `PUT` | `update a specific horse by name` |
-| `/invest/{horse}/{amount}` | `UPDATE` | `invest - gamble on a horse` |
+| `/invest/{horse}/{amount}` | `UPDATE` | `Allows the user to place a bet on a specific horse.` |
 
-
+The program also defines several functions to handle these endpoints.
+The GetHorses function returns the number of horses available, 
+the GetHorse function returns information about a specific horse, and the Invest function allows the user to place a bet on a specific horse. 
+The main function initializes the web server and sets up the routing.
 
 ## Tech Stack
 
-Refer to my [main portfolio's repo][portfolio-repo] [Infra.md file][portfolio-infra].
+For technologies used in this project please Refer to my [main portfolio's repo][portfolio-repo] [Infra.md file][portfolio-infra].
 
 ## 🔗 Links
 
