@@ -48,7 +48,7 @@ While Implementing:
 -- The bson.D type is used to represent a BSON document in Go code. 
 -- After inserting the documents, the InsertedIDs field of the InsertManyResult object is printed to the console.
 
-## Architecture:
+## CI Pipeline:
 ![image](app/assets/pics/architecture.png)
 
 ## REST API REF:
