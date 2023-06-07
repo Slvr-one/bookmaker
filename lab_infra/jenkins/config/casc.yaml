@@ -1,0 +1,87 @@
+jenkins:
+  numExecutors: 1
+  systemMessage: "Hi User, jenkins setup with jcasc is on!"
+  securityRealm: #an authentication mechanism
+    local: #basic authentication - ID/username & password
+      allowsSignup: false #prevents anonymous users from creating an account
+      users:
+       - id: ${JENKINS_ADMIN_ID}
+         password: ${JENKINS_ADMIN_PASSWORD}
+  authorizationStrategy:
+    globalMatrix:
+      permissions:
+        #- "View/Delete:authenticated"
+        #- "View/Read:authenticated"
+        #- "View/Configure:authenticated"
+        #- "View/Create:authenticated"
+        - "Job/Read:authenticated"
+        - "Job/Build:authenticated"
+        - "Job/Configure:authenticated"
+        - "Job/Create:authenticated"
+        - "Job/Delete:authenticated"
+        - "Job/Discover:authenticated"
+        - "Job/Move:authenticated"
+        - "Job/Workspace:authenticated"
+        - "Job/Cancel:authenticated"
+        - "Run/Delete:authenticated"
+        - "Run/Replay:authenticated"
+        - "Run/Update:authenticated"
+        - "Overall/Read:admin"
+        - "Overall/Administer:admin"
+
+        # - "Overall/Administer:admin"
+        # - "Overall/Read:authenticated"
+
+# unclassified:
+#   location:
+#     url: http://jenkins:8080/
+
+
+crumbIssuer: "standard"
+# Docker: https://github.com/jenkinsci/configuration-as-code-plugin/tree/master/demos/docker
+clouds:
+  - docker:
+      name: "docker"
+      dockerApi:
+        dockerHost:
+          uri: "unix:///var/run/docker.sock"
+      templates:
+        - labelString: "docker-agent"
+          dockerTemplateBase:
+            # TODO: pin sha256 or versions when using in production
+            image: "jenkins/agent"
+          remoteFs: "/home/jenkins/agent"
+          connector:
+            attach:
+              user: "jenkins"
+          instanceCapStr: "10"
+          retentionStrategy:
+            idleMinutes: 1
+security:
+  scriptApproval:
+    approvedSignatures:
+      - method java.lang.String indexOf int
+      - method io.jenkins.plugins.casc.ConfigurationAsCode configure
+      - staticMethod io.jenkins.plugins.casc.ConfigurationAsCode get
+tool:
+  git:
+    installations:
+      - home: "git"
+        name: "Default"
+  jdk:
+    installations:
+      - home: "/opt/java/openjdk"
+        name: "java"
+  maven:
+    installations:
+      - name: "maven"
+        properties:
+          - installSource:
+              installers:
+                - maven:
+                    id: "3.6.2"
+
+
+jobs:
+  - file: /var/jenkins_config/jobs/folders.groovy
+  - file: /var/jenkins_config/jobs/jobs.groovy

@@ -3,6 +3,7 @@ pipeline {
         timestamps()
         timeout(time:5, unit:'MINUTES')
         gitLabConnection('jenkins_gitlab')
+        // buildDiscarder(logRotator(numToKeepStr: '100'))
     }
 
     agent any

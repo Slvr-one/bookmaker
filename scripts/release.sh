@@ -8,6 +8,7 @@ set -euxo pipefail
 
 # helm install my-api-server . \
 #     --set mongoDbUrl=mongodb://dviross:secretpass@mongodb-service.default.svc.cluster.local:27017/mydb
+
 export name=$1
 export tag=$2
 
@@ -37,17 +38,16 @@ kubectl create secret docker-registry regcred \
   --namespace=app || true # --dry-run=client -o yaml | kubectl create -f - \
   # --ignore-not-found=true
 
-./scripts/dc_lab.sh
+./scripts/dc_up.sh
 ./scripts/get_pass.sh
 
-# ./scripts/dc_app.sh
 
 #deploy testing lab (Jenkins server, Gitlab server, Artifactory and maven development environment):
-cd $lab
-docker compose down && echo -e "\n ###down### \n"
+pushd $lab
 
-docker compose up --build -d && echo -e "\n ###up### \n"
-cd -
+./../scripts/dc_up.sh
+
+popd
 
 
 # kubectl create secret docker-registry regcred \
