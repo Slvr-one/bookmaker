@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"errors"
@@ -11,11 +11,12 @@ import (
 	"github.com/fatih/color"
 	"github.com/ichtrojan/thoth"
 
+	"github.com/Slvr-one/bookmaker/structs"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-func initLog() {
+func InitLog() {
 	// UNIX Time is faster and smaller than most timestamps
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 
@@ -72,7 +73,7 @@ func End(start time.Time) {
 	// log.Info().Msg(msg)
 }
 
-func ifHorseExist(horseName string) (exist bool) {
+func IfHorseExist(horseName string, horses []structs.Horse) (exist bool) {
 	for _, h := range horses {
 		if h.Name == horseName {
 			exist = true

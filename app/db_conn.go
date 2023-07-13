@@ -8,14 +8,15 @@ import (
 	"os"
 	"time"
 
-	// mongo
+	// mongo:
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
-	//sql
+	// sql:
+	h "github.com/Slvr-one/bookmaker/handlers"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/joho/godotenv/autoload"
 	// "github.com/ichtrojan/thoth"
@@ -43,16 +44,16 @@ func MongoDB(mongodbUri string) (*mongo.Client, error) {
 	// client, connErr := mongo.NewClient(clientOptions)
 	// Check(connErr, "err on db client creation.")
 	// connErr = client.Connect(ctx)
-	Check(connErr, "err on db connection.")
+	h.Check(connErr, "err on db connection.")
 
 	defer func() {
 		connErr := client.Disconnect(ctx)
-		Check(connErr, "db dissconnected")
+		h.Check(connErr, "db dissconnected")
 	}()
 
 	//check if MongoDB database has been found and connected
 	pingErr := client.Ping(ctx, readpref.Primary())
-	Check(pingErr, "err on db ping test")
+	h.Check(pingErr, "err on db ping test")
 
 	// databases, err := client.ListDatabaseNames(ctx, bson.M{})
 	// Check(err, "err on listing databases")
@@ -83,7 +84,7 @@ func MongoDB(mongodbUri string) (*mongo.Client, error) {
 
 	// insertMany returns a result object with the ids of the newly inserted objects
 	result, insertErr := betsColl.InsertMany(ctx, testBoard)
-	Check(insertErr, "err on db objects insertion.")
+	h.Check(insertErr, "err on db objects insertion.")
 
 	// display the ids of the newly inserted objects
 	// fmt.Println("Inserted a single document: ", result.InsertedID)
@@ -113,19 +114,19 @@ func SqlDB() *sql.DB {
 	//checking env for db user & pass, and host (url)
 	user, exist := os.LookupEnv("DB_USER")
 	if !exist {
-		LogToFile("DB_USER not set in .env")
+		h.LogToFile("DB_USER not set in .env")
 		log.Fatal("DB_USER not set in .env")
 	}
 
 	pass, exist := os.LookupEnv("DB_PASS")
 	if !exist {
-		LogToFile("DB_PASS not set in .env")
+		h.LogToFile("DB_PASS not set in .env")
 		log.Fatal("DB_PASS not set in .env")
 	}
 
 	host, exist := os.LookupEnv("DB_HOST")
 	if !exist {
-		LogToFile("DB_HOST not set in .env")
+		h.LogToFile("DB_HOST not set in .env")
 		log.Fatal("DB_HOST not set in .env")
 	}
 
@@ -133,7 +134,7 @@ func SqlDB() *sql.DB {
 	credentials := fmt.Sprintf("%s:%s@(%s:3306)/?charset=utf8&parseTime=True", user, pass, host)
 	db, sqlConnErr := sql.Open("mysql", credentials)
 	// db, err := sql.Open("mysql",user+":"+pass+"@/"+host)
-	Check(sqlConnErr, "Error on connection to sql db, credentials problem or likewise")
+	h.Check(sqlConnErr, "Error on connection to sql db, credentials problem or likewise")
 	defer db.Close()
 
 	fmt.Println("Database Connection Successful - ⛁ -")
@@ -150,10 +151,10 @@ func SqlDB() *sql.DB {
 	// }
 	// _, sqlConnErr = db.Exec(`CREATE DATABASE gotodo`)
 
-	Check(sqlConnErr, "Error on creating db todo, already exist?")
+	h.Check(sqlConnErr, "Error on creating db todo, already exist?")
 
 	_, sqlConnErr = db.Exec(`USE gotodo`)
-	Check(sqlConnErr, "Error on setting gotodo as db")
+	h.Check(sqlConnErr, "Error on setting gotodo as db")
 
 	_, sqlConnErr = db.Exec(`
 		CREATE TABLE todos (
@@ -163,7 +164,7 @@ func SqlDB() *sql.DB {
 		    PRIMARY KEY (id)
 		);
 	`)
-	Check(sqlConnErr, "Error on creating table")
+	h.Check(sqlConnErr, "Error on creating table")
 
 	return db
 }

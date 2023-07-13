@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"encoding/json"
@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"time"
 
+	s "github.com/Slvr-one/bookmaker/structs"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
 	"rsc.io/quote"
@@ -29,7 +30,8 @@ func Welcom(ctx *gin.Context) {
 	tpl.Execute(ctx.Writer, nil)
 	// io.WriteString(ctx.Writer, "Hello again, Gefyra!")
 
-	fmt.Fprintf(ctx.Writer, "<h3 style='color: black'>horses available: %v</h3>", len(horses))
+	var horses []s.Horse //handle with func / ctx
+	fmt.Fprintf(ctx.Writer, "<h3 style='color: black'>horses available: %v</h3>", horses)
 	fmt.Fprintf(ctx.Writer, "<h3 style='color: black'> random go quote: %v</h3>", goQoute)
 	fmt.Fprintf(ctx.Writer, "<h5 style='color: black'> %s</h5>", dt.Format("01-02-2006 15:04:05 Mon"))
 }
@@ -81,7 +83,7 @@ func GetMetrics(host string, port int) string {
 		// SC := resp.StatusCode
 	}
 	// get the metrics
-	metrics := "Horses currently: " + strconv.Itoa(len(horses)) + "\n"
+	metrics := "Horses currently: " + strconv.Itoa(len(Horses)) + "\n"
 	metrics += "Bets corrently: " + strconv.Itoa(len(MainBoard.Bets)) + "\n"
 	return metrics
 }
@@ -90,7 +92,7 @@ func Monitor(ctx *gin.Context) {
 
 	// port :=
 	host := ctx.Request.Host
-	port, _ := strconv.Atoi(defaultServerPort) //r.URL.Query().Get("port")
+	port, _ := strconv.Atoi(DefaultServerPort) //r.URL.Query().Get("port")
 
 	m := GetMetrics(host, port)
 	fmt.Fprintf(ctx.Writer, "%v", m)
@@ -113,7 +115,7 @@ func GetHorses(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "application/json")
 
 	// return the list of horses
-	json.NewEncoder(ctx.Writer).Encode(horses)
+	json.NewEncoder(ctx.Writer).Encode(Horses)
 	// fmt.Fprintf(ctx.Writer, "%v", horses)
 
 	// hLen := len(horses)
@@ -126,7 +128,7 @@ func CreateHorse(ctx *gin.Context) {
 	params := mux.Vars(ctx.Request)
 	horseName := params["name"]
 
-	exist := ifHorseExist(horseName)
+	exist := IfHorseExist(horseName, Horses)
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot create, Horse named %s does not exist", horseName)
