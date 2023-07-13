@@ -17,7 +17,7 @@ type Horse struct {
 	Name   string  `json:"name"`
 	Color  string  `json:"color"`
 	Record *Record `json:"record"`
-	breed  string  `json:"breed"`
+	Breed  string  `json:"breed"`
 	Age    int     `json:"age"`
 	// Odds float64 `json:"odds"`
 }

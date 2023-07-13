@@ -21,7 +21,8 @@ import (
 
 // init a route handler for the server client
 func InitR() *gin.Engine {
-	router := gin.Default()
+	// router := gin.Default()
+	router := gin.New()
 	// fs := http.FileServer(http.Dir("static"))
 
 	// Use Kratos middleware
@@ -31,7 +32,7 @@ func InitR() *gin.Engine {
 
 	// router.Handle("/assets/", http.StripPrefix("/assets/", fs))
 	// router.Handle("/assets/", http.StripPrefix("/assets/", staticHandler()).Methods("GET")
-	router.GET("/GH/:name", GetHorse) //Get a specific horse
+	router.GET("/GH/:name", app.handlers.GetHorse) //Get a specific horse
 
 	router.GET("/", Welcom)
 	router.GET("/health", Health)
