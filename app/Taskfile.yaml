@@ -1,0 +1,40 @@
+version: "3"
+
+env:
+  GREETING: Hey, there!
+
+dotenv: ['.env'] # , '{{.ENV}}/.env.', '{{.HOME}}/.env'
+tasks:
+  default:
+    cmds:
+      # - task: docs
+        # vars: { CONTENT: '1' }
+      - task: build
+        vars: { EXE: 'bookmaker' }
+      - task: start
+        vars: { EXE: 'bookmaker' }
+
+  dev:
+    cmds:
+      - air
+
+  docs:
+    cmds:
+      - echo TD_SwagDocs
+      # - swag init --dir .
+
+  build:
+    run: when_changed
+    cmds:
+      - go build -o {{.EXE}} .
+      # - echo one 
+
+  start:
+    cmds:
+      - ./{{.EXE}}
+
+  install:
+    cmds:
+      - go install github.com/swaggo/swag/cmd/swag@latest
+      - go install github.com/go-task/task/v3/cmd/task@latest
+      - go install github.com/cosmtrek/air@latest

@@ -16,6 +16,20 @@ import (
 	"rsc.io/quote"
 )
 
+var (
+	Horses    []s.Horse
+	MainBoard s.Board
+
+	Conn    s.Conn
+	connErr error
+
+	// id        int
+	// item      string
+	// completed int
+	// view     = template.Must(template.ParseFiles("./views/index.html"))
+	// db = SqlDB()
+)
+
 // welcom - html
 func Welcom(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -90,9 +104,9 @@ func GetMetrics(host string, port int) string {
 
 func Monitor(ctx *gin.Context) {
 
-	// port :=
+	serverPort := ctx.GetString("serverPort")
 	host := ctx.Request.Host
-	port, _ := strconv.Atoi(DefaultServerPort) //r.URL.Query().Get("port")
+	port, _ := strconv.Atoi(serverPort) //r.URL.Query().Get("port")
 
 	m := GetMetrics(host, port)
 	fmt.Fprintf(ctx.Writer, "%v", m)
@@ -153,6 +167,9 @@ func DeleteHorse(ctx *gin.Context) {
 		LogToFile(msg)
 		return
 	}
+
+	//querry horses available from db:
+	horses := db.GetAvHorses()
 
 	for i, horse := range horses {
 		if horse.Name == horseName {

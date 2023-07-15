@@ -2,22 +2,25 @@ FROM golang:1.20-bullseye AS build
 # FROM cosmtrek/air
 
 ENV port ${port:-9090}
+ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 
 # WORKDIR /go/src/github.com/Slvr-one/bookmaker
-WORKDIR /app/
+WORKDIR /app
 
 RUN apt install git curl bash
 
-#copy dependencies
-COPY go.mod . 
-COPY go.sum .
+COPY . .
 
 # RUN go get github.com/githubnemo/CompileDaemon
+# RUN go install github.com/swaggo/swag/cmd/swag@latest 
+# RUN go install github.com/go-task/task/v3/cmd/task@latest
+# RUN task docs
 
-COPY ./app/* ./
+
+# RUN task build
 
 # Unit tests
-# RUN CGO_ENABLED=0 go test -v
+# RUN go test -v
 
 # ENTRYPOINT CompileDaemon --build="go build -o main" --command=./main
 
@@ -25,19 +28,20 @@ COPY ./app/* ./
 #     && chmod +x install.sh && sh install.sh && cp ./bin/air /bin/air
 
 RUN go mod download \
-  && CGO_ENABLED=0 go build -a -installsuffix cgo -o ./bin/main .
-# ENTRYPOINT "sleep" "50"
+  && go build -a -installsuffix cgo -o ./bin/main .
 
 # ******************************************************* #
 
 FROM alpine:3.9 AS runtime
 # FROM alpine:latest  
 
-RUN apk add --no-cache rsyslog curl bash sudo ca-certificates
-WORKDIR /root/
+# RUN apk add --no-cache rsyslog curl bash sudo ca-certificates
+# WORKDIR /root/
 
-COPY --from=build /app/bin/main ./
+COPY --from=build ["/app/bin/main", "/main"] ./
 # COPY --from=build /app/static/ /app/static/
 
+ENV GO_ENV=production
 EXPOSE ${port}
-ENTRYPOINT ["./main"]
+
+ENTRYPOINT ["/main"]

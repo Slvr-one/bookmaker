@@ -1,9 +1,9 @@
-root = "./app"
+# root = "./"
 testdata_dir = "testdata"
 tmp_dir = "tmp"
 
 [build]
-  cmd = "go build -o ./tmp/main ."
+  cmd = "task default"
   bin = "./tmp/main"
   full_bin = ""
 

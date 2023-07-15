@@ -4,29 +4,29 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/Slvr-one/bookmaker/api"
+	"github.com/Slvr-one/bookmaker/db"
 	h "github.com/Slvr-one/bookmaker/handlers"
 	inits "github.com/Slvr-one/bookmaker/initializers"
-	"github.com/Slvr-one/bookmaker/initializers/db"
 	s "github.com/Slvr-one/bookmaker/structs"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
-	DefaultServerPort = "9090"  //default port to serve app
-	DefaultMongoPort  = "27017" // default port for mongoDB connection
-	DefaultHost       = "localhost"
+	DefaultServerPort = "9090"      //default port to serve app
+	DefaultMongoPort  = "27017"     // default port for mongoDB connection
+	DefaultHost       = "localhost" //default host for mongo database sever
 )
 
 var (
 	Horses    []s.Horse
 	MainBoard s.Board
 
-	Conn    = &s.Conn{}
+	Conn    s.Conn
 	connErr error
 
 	// id        int
@@ -38,36 +38,33 @@ var (
 
 func init() {
 	// rand.Seed(time.Now().UnixNano())
-	// SqlDB()
+	start := time.Now()
+	inits.InitLog()
 
-	inits.SetBoard(MainBoard)
+	inits.SetBoard(MainBoard, start)
 	inits.LoadEnvVars()
-	mongoHost, mongoPort := inits.SetEnv(DefaultMongoPort, DefaultHost)
 
-	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
-
-	db.MongoDB(mongodbUrl)
-
-	Conn.Client, connErr = db.MongoDB(mongodbUrl)
-
-	h.Check(connErr, "err on running mongoDB func to init connect")
+	defer h.End(start)
 
 }
 
 // main
 func main() {
-	router := api.InitR()
-	inits.InitLog()
-	start := time.Now()
-	defer h.End(start)
-
-	MainBoard.Date = &start
-
-	serverPort, set := os.LookupEnv("serverPort")
-	if !set {
-		h.LogToFile("serverPort env wasn't set, default is 9090.")
-		serverPort = DefaultServerPort
+	exampleData := s.Car{
+		Id:        primitive.NewObjectID(),
+		CreatedAt: time.Now().UTC(),
+		Brand:     "Mercedes",
+		Model:     "G-360",
+		Year:      2002,
 	}
+	// db.Insert(exampleData)
+
+	router := api.InitR()
+
+	mongoHost, mongoPort, serverPort := inits.SetEnv(DefaultMongoPort, DefaultHost, DefaultServerPort)
+	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
+	Conn.Client, connErr = db.MongoDB(mongodbUrl, MainBoard, Conn) // SqlDB()
+	h.Check(connErr, "err on running mongoDB func to init connect")
 
 	listenAddr := flag.String("listenaddr", serverPort, "port to serve the app")
 

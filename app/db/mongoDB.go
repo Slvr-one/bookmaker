@@ -6,17 +6,18 @@ import (
 	"time"
 
 	h "github.com/Slvr-one/bookmaker/handlers"
+	s "github.com/Slvr-one/bookmaker/structs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func MongoDB(mongodbUri string) (*mongo.Client, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func MongoDB(mongodbUri string, MainBoard s.Board, Conn s.Conn) (*mongo.Client, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 
-	//init mongo client
+	//initialize mongoDB client
 	clientOptions := options.Client().ApplyURI(mongodbUri)
 	// clientOptions := options.Client().ApplyURI(fmt.Sprintf("mongodb:%v", mongoPath))
 
@@ -27,19 +28,20 @@ func MongoDB(mongodbUri string) (*mongo.Client, error) {
 	// Check(connErr, "err on db client creation.")
 	// connErr = client.Connect(ctx)
 	h.Check(connErr, "err on db connection.")
+	client.Connect(ctx)
 
 	defer func() {
 		connErr := client.Disconnect(ctx)
-		h.Check(connErr, "db dissconnected")
+		h.Check(connErr, "db dissconnected, not all connections associated with this Client have been closed")
 	}()
 
 	//check if MongoDB database has been found and connected
 	pingErr := client.Ping(ctx, readpref.Primary())
 	h.Check(pingErr, "err on db ping test")
 
-	// databases, err := client.ListDatabaseNames(ctx, bson.M{})
-	// Check(err, "err on listing databases")
-	// fmt.Println(databases)
+	databases, err := client.ListDatabaseNames(ctx, bson.M{}, options.MergeListDatabasesOptions())
+	h.Check(err, "err on listing databases")
+	fmt.Println(databases)
 
 	//init a collection (table) of bets in bookmaker db
 	bmDB := client.Database("bookmaker")
@@ -66,6 +68,7 @@ func MongoDB(mongodbUri string) (*mongo.Client, error) {
 
 	// insertMany returns a result object with the ids of the newly inserted objects
 	result, insertErr := betsColl.InsertMany(ctx, testBoard)
+	// res, err := db.Collection("cars").InsertOne(context.Background(), exampleData)
 	h.Check(insertErr, "err on db objects insertion.")
 
 	// display the ids of the newly inserted objects

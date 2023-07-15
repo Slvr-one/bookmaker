@@ -11,7 +11,7 @@ services:
     container_name: 'bookmaker'
     depends_on:
       - 'db'
-    build: .
+    build: ./app
     # ports:
     #   - '9090:9090'
     volumes:
