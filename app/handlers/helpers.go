@@ -12,19 +12,9 @@ import (
 	"github.com/ichtrojan/thoth"
 
 	"github.com/Slvr-one/bookmaker/structs"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
-func InitLog() {
-	// UNIX Time is faster and smaller than most timestamps
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-
-	// log.Print("hello world")
-
-	backLogger, _ := thoth.Init("backlog")
-	backLogger.Log(errors.New("This is the back Log: \n"))
-}
 func Check(err error, msg string) {
 	if err != nil {
 		color.Green(msg)

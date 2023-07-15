@@ -9,6 +9,8 @@ import (
 
 	"github.com/Slvr-one/bookmaker/api"
 	h "github.com/Slvr-one/bookmaker/handlers"
+	inits "github.com/Slvr-one/bookmaker/initializers"
+	"github.com/Slvr-one/bookmaker/initializers/db"
 	s "github.com/Slvr-one/bookmaker/structs"
 	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -17,45 +19,45 @@ import (
 const (
 	DefaultServerPort = "9090"  //default port to serve app
 	DefaultMongoPort  = "27017" // default port for mongoDB connection
-	// defaultHost       = "localhost"
+	DefaultHost       = "localhost"
 )
 
 var (
 	Horses    []s.Horse
 	MainBoard s.Board
 
-	conn = &s.Conn{}
+	Conn    = &s.Conn{}
+	connErr error
+
+	// id        int
+	// item      string
+	// completed int
+	// view     = template.Must(template.ParseFiles("./views/index.html"))
+	// db = SqlDB()
 )
 
-// func init() {
-// 	// rand.Seed(time.Now().UnixNano())
-// 	// SqlDB()
-// 	MainBoard.Title = "welcom to the Garrison; what we have today: "
-// 	MainBoard.Footer = "hope to see tou here again"
+func init() {
+	// rand.Seed(time.Now().UnixNano())
+	// SqlDB()
 
-// 	envLoadErr := godotenv.Load()
-// 	Check(envLoadErr, "No .env file found")
+	inits.SetBoard(MainBoard)
+	inits.LoadEnvVars()
+	mongoHost, mongoPort := inits.SetEnv(DefaultMongoPort, DefaultHost)
 
-// 	mongoPort, set := os.LookupEnv("mongoPort")
-// 	if !set {
-// 		LogToFile("mongoPort wasn't set, default is 27017")
-// 		mongoPort = DefaultMongoPort
-// 	}
+	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
 
-// 	mongoHost, set := os.LookupEnv("mongoHost")
-// 	if !set {
-// 		LogToFile("mongoHost wasn't set, default is localhost")
-// 		mongoHost = defaultHost
-// 	}
+	db.MongoDB(mongodbUrl)
 
-// 	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
-// 	conn.Client = MongoDB(mongodbUrl)
-// }
+	Conn.Client, connErr = db.MongoDB(mongodbUrl)
+
+	h.Check(connErr, "err on running mongoDB func to init connect")
+
+}
 
 // main
 func main() {
 	router := api.InitR()
-	h.InitLog()
+	inits.InitLog()
 	start := time.Now()
 	defer h.End(start)
 
