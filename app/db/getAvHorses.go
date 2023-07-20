@@ -1,6 +1,9 @@
 package db
 
 import (
+	"fmt"
+
+	h "github.com/Slvr-one/bookmaker/handlers"
 	"github.com/Slvr-one/bookmaker/structs"
 	"github.com/gin-gonic/gin"
 )
@@ -16,5 +19,7 @@ func GetAvHorses(conn structs.Conn, ctx *gin.Context) {
 		structs.Tea{Type: "Earl Grey", Rating: 8, Vendor: []string{"A", "B"}},
 	}
 	result, err := coll.InsertMany(ctx, docs)
+	h.Check(err, "checking")
+	fmt.Println(result)
 
 }

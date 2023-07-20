@@ -9,7 +9,8 @@ The program defines several structs to represent data, including:
 Horse, Record, Person, and Bet.
 It allows investors to participate in various events.
 The app is connected to a MongoDB database for persistancy between events.
-Built with Go, utilizing MongoDB, Nginx, Docker & Compose.
+Built with Go, utilizing MongoDB, Gin framwork, Nginx, Docker & Compose.
+using git, Taskfile, air, wails.
 
 ## Breakdown:
 This app is part of my Portfolio project, which includes

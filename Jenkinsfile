@@ -1,3 +1,23 @@
+
+def incrementVersion(String version) {
+    def parts = version.tokenize('.')
+    def major = parts[0].toInteger()
+    def minor = parts[1].toInteger()
+    def patch = parts[2].toInteger()
+
+    patch++
+    if (patch > 99) {
+        patch = 0
+        minor++
+        if (minor > 99) {
+            minor = 0
+            major++
+        }
+    }
+
+    return "${major}.${minor}.${patch}"
+}
+
 pipeline {
     options {
         timestamps()
@@ -8,6 +28,12 @@ pipeline {
 
     agent any
     environment {
+        //  // Define environment variables here
+        // DOCKER_IMAGE = 'bookmaker'
+        // KUBECONFIG = '~/.kube/config'
+        // TERRAFORM_DIR = '.'
+
+        VERSION = '1.0.0' // initial version
         MSG = sh (script: "git log -1 --pretty=%B ${GIT_COMMIT}", returnStdout: true).trim()
         // PROVISION = sh(script: "git log -1 | tail -1 | grep '#e2e'", returnStatus: true)
         ECR_URL = "514095112279.dkr.ecr.eu-central-1.amazonaws.com/bookmaker"
@@ -16,7 +42,7 @@ pipeline {
         INFRA_REPO = "" 
         AWS_REGION = "eu-central-1"
         PROJECT = "bookmaker"
-        RET = 5 //tests wget retries 
+        RET = 5 // wget retries for tests
         BM_PORT = 5004
         BM_PORT_EXTERNAL = 5000
         NGINX_PORT = 80
@@ -45,18 +71,18 @@ pipeline {
         )
     }
     stages {
-        // stage("0 - pre") {
-        //     steps {
-        //         deleteDir()
-        //         checkout scm
-        //         // checkout changelog: true, poll: true, scm: [
-        //         //     $class: 'GitSCM',
-        //         //     branches: [[name: "origin/${gitlabSourceBranch}"]],
-        //         //     extensions: [[$class: 'PreBuildMerge', options: [fastForwardMode: 'FF', mergeRemote: 'origin', mergeStrategy: 'DEFAULT', mergeTarget: "${gitlabTargetBranch}"]]],
-        //         //     userRemoteConfigs: [[name: 'origin', url: 'git@gitlab:jenkins/application.git']]
-        //         // ]
-        //     }
-        // }
+        stage("0 - preface") {
+            steps {
+                deleteDir()
+                checkout scm
+                // checkout changelog: true, poll: true, scm: [
+                //     $class: 'GitSCM',
+                //     branches: [[name: "origin/${gitlabSourceBranch}"]],
+                //     extensions: [[$class: 'PreBuildMerge', options: [fastForwardMode: 'FF', mergeRemote: 'origin', mergeStrategy: 'DEFAULT', mergeTarget: "${gitlabTargetBranch}"]]],
+                //     userRemoteConfigs: [[name: 'origin', url: 'git@gitlab:jenkins/application.git']]
+                // ]
+            }
+        }
         stage("1 - build") {
             // when {
             //     expression { BRANCH_NAME =~ "feature/*" || BRANCH_NAME == "main" }
@@ -66,7 +92,7 @@ pipeline {
                     echo "---- build / package ----"
                     sh "./dockerize.sh $PROJECT"
                     // script {
-                    //     app = docker.build("ibuchh/petclinic-spinnaker-jenkins")
+                    //     app = docker.build("bookmaker")
                     // }
                 }
             }
@@ -117,7 +143,7 @@ pipeline {
             }
         }
         stage("4 - tag") {
-            when { branch "main" }
+            when { branch "release" }
             steps {
                 sshagent(['jenkins_gitlab']) {
                     sh "git fetch -t || true"

@@ -153,37 +153,37 @@ func CreateHorse(ctx *gin.Context) {
 
 }
 
-func DeleteHorse(ctx *gin.Context) {
-	ctx.Writer.Header().Set("Content-Type", "application/json")
+// func DeleteHorse(ctx *gin.Context) {
+// 	ctx.Writer.Header().Set("Content-Type", "application/json")
 
-	params := mux.Vars(ctx.Request)
-	horseName := params["name"]
+// 	params := mux.Vars(ctx.Request)
+// 	horseName := params["name"]
 
-	exist := ifHorseExist(horseName)
+// 	//querry horses available from db:
+// 	// horses := db.GetAvHorses()
+// 	horses, exist := ctx.Get("horses") //?
+// 	// exist := IfHorseExist(horseName)
 
-	if !exist {
-		msg := fmt.Sprintf("Cannot delete, Horse named %s does not exist", horseName)
-		fmt.Fprint(ctx.Writer, msg)
-		LogToFile(msg)
-		return
-	}
+// 	if !exist {
+// 		msg := fmt.Sprintf("Cannot delete, Horse named %s does not exist", horseName)
+// 		fmt.Fprint(ctx.Writer, msg)
+// 		LogToFile(msg)
+// 		return
+// 	}
 
-	//querry horses available from db:
-	horses := db.GetAvHorses()
-
-	for i, horse := range horses {
-		if horse.Name == horseName {
-			/* append() adds elements to a slice, but in this case, its used to remove an element:
-			The [:i] notation denotes that all the elements before the i-th index are included,
-			while [i+1:] denotes that all the elements after the i-th index are included.
-			By combining these two notations with the ellipsis(...), the horses slice is effectively modified to exclude the i-th element.
-			note that the original slice is not modified; rather, a new slice is created missing the i-th element. */
-			horses = append(horses[:i], horses[i+1:]...)
-			break
-		}
-	}
-	ctx.Writer.WriteHeader(http.StatusNoContent)
-}
+// 	for i, horse := range horses {
+// 		if horse.Name == horseName {
+// 			/* append() adds elements to a slice, but in this case, its used to remove an element:
+// 			The [:i] notation denotes that all the elements before the i-th index are included,
+// 			while [i+1:] denotes that all the elements after the i-th index are included.
+// 			By combining these two notations with the ellipsis(...), the horses slice is effectively modified to exclude the i-th element.
+// 			note that the original slice is not modified; rather, a new slice is created missing the i-th element. */
+// 			horses = append(horses[:i], horses[i+1:]...)
+// 			break
+// 		}
+// 	}
+// 	ctx.Writer.WriteHeader(http.StatusNoContent)
+// }
 
 // fetch horse by name
 func GetHorse(ctx *gin.Context) {
@@ -193,7 +193,7 @@ func GetHorse(ctx *gin.Context) {
 	horseName := params["name"]
 
 	// check if the horse exists
-	exist := ifHorseExist(horseName)
+	exist := IfHorseExist(horseName)
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot get, Horse named %s does not exist", horseName)
@@ -227,7 +227,7 @@ func UpdateHorse(ctx *gin.Context) {
 	horseAge, _ := strconv.Atoi(params["age"])
 
 	// check if the horse exists
-	exist := ifHorseExist(horseName)
+	exist := IfHorseExist(horseName)
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot update, Horse named %s does not exist", horseName)
@@ -330,7 +330,7 @@ func Invest(ctx *gin.Context) {
 
 	// ***
 	// check if the horse exists
-	exist := ifHorseExist(candidate.Name)
+	exist := IfHorseExist(candidate.Name)
 
 	if !exist {
 		msg := fmt.Sprintf("Horse named %s does not exist", candidate.Name)
@@ -403,7 +403,7 @@ func Invest(ctx *gin.Context) {
 			// //lose
 			// horses[i].Record.Loses += 1 //amountInt
 
-			result, insertErr := conn.Collection.InsertOne(ctx.Request.Context(), thisBet)
+			result, insertErr := Conn.Collection.InsertOne(ctx.Request.Context(), thisBet)
 			Check(insertErr, "err on db objects insertion.")
 
 			msg := fmt.Sprintf("Inserted a single document: %v", result)
