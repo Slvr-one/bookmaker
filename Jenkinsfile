@@ -1,10 +1,13 @@
 
 def incrementVersion(String version) {
-    def parts = version.tokenize('.')
+
+    def parts = version.tokenize('.')  // returns a list, will ignore empty string
+
     def major = parts[0].toInteger()
     def minor = parts[1].toInteger()
     def patch = parts[2].toInteger()
 
+    // increment version by patch
     patch++
     if (patch > 99) {
         patch = 0
@@ -15,7 +18,8 @@ def incrementVersion(String version) {
         }
     }
 
-    return "${major}.${minor}.${patch}"
+    def thisVersion = "${major}.${minor}.${patch}"
+    return thisVersion
 }
 
 pipeline {
@@ -49,6 +53,7 @@ pipeline {
         BM_CONT_NAME = "app"
         NGINX_CONT_NAME = "static"
     }
+
     tools { 
         go 'golang'
     }

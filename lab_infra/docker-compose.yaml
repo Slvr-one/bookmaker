@@ -14,7 +14,7 @@ services:
       - artifactory
     image: '839821061981.dkr.ecr.eu-central-1.amazonaws.com/jenkins:1.1.0'
     ports:
-      - '1001:8099'
+      - '1001:8080'
     volumes:
       - '~/LAB/jenkins/data:/var/jenkins_home'
       - '~/LAB/jenkins/.m2:/root/.m2'
@@ -22,11 +22,11 @@ services:
       - './jenkins/config:/var/jenkins_config/'
       # - ./terraform:/var/terraform 
       # - ./ansible/:/var/ansible
-    environment:
-      # - CASC_JENKINS_CONFIG=/var/jenkins_config/jenkins.yaml
-      - JENKINS_ADMIN_ID=admin
-      - JENKINS_ADMIN_PASSWORD=123456
-      - JENKINS_OPTS="--httpPort=8099"
+#    environment:
+#      # - CASC_JENKINS_CONFIG=/var/jenkins_config/jenkins.yaml
+#      - JENKINS_ADMIN_ID=admin
+#      - JENKINS_ADMIN_PASSWORD=123456
+#      - JENKINS_OPTS="--httpPort=8099"
 
   gitlab:
     <<: *def
