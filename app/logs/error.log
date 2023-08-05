@@ -300,3 +300,55 @@
 
 [2023-05-17 23:04:52] ended at -> 2023-05-17 23:04:52.590703146 +0300 IDT m=+64.747930085, elapsed -> 1m4.742722137s
 
+[2023-08-05 20:12:40] ended at -> 2023-08-05 20:12:40.915505603 +0300 IDT m=+0.005040537, elapsed -> 214.8µs
+
+[2023-08-05 20:12:40] ended at -> 2023-08-05 20:12:40.918467502 +0300 IDT m=+0.004847901, elapsed -> 74.029µs
+
+[2023-08-05 20:12:40] mongoHost wasn't set, default is 27017
+
+[2023-08-05 20:12:40] mongoHost wasn't set, default is 27017
+
+[2023-08-05 20:12:40] mongoPort wasn't set, default is localhost
+
+[2023-08-05 20:12:40] mongoPort wasn't set, default is localhost
+
+[2023-08-05 20:12:40] serverPort env wasn't set, default is localhost
+
+[2023-08-05 20:12:40] serverPort env wasn't set, default is localhost
+
+[2023-08-05 20:12:40] err on db connection.
+
+[2023-08-05 20:12:40] err on db connection.
+
+[2023-08-05 20:24:29] ended at -> 2023-08-05 20:24:29.546073419 +0300 IDT m=+0.004417022, elapsed -> 207.211µs
+
+[2023-08-05 20:24:29] mongoHost wasn't set, default is 27011
+
+[2023-08-05 20:24:29] mongoPort wasn't set, default is localhost
+
+[2023-08-05 20:24:29] serverPort env wasn't set, default is localhost
+
+[2023-08-05 20:24:29] err on db connection.
+
+[2023-08-05 20:35:11] ended at -> 2023-08-05 20:35:11.77922843 +0300 IDT m=+0.004803573, elapsed -> 83.927µs
+
+[2023-08-05 20:35:11] mongoHost wasn't set, default is 27011
+
+[2023-08-05 20:35:11] mongoPort wasn't set, default is localhost
+
+[2023-08-05 20:35:11] serverPort env wasn't set, default is localhost
+
+[2023-08-05 20:35:11] err on db connection.
+
+[2023-08-05 20:38:21] ended at -> 2023-08-05 20:38:21.314033439 +0300 IDT m=+0.004505957, elapsed -> 162.083µs
+
+[2023-08-05 20:38:21] mongoHost wasn't set, default is localhost
+
+[2023-08-05 20:38:21] mongoPort wasn't set, default is 27011
+
+[2023-08-05 20:38:21] serverPort env wasn't set, default is 27011
+
+[2023-08-05 20:38:41] err on db ping test
+
+[2023-08-05 20:38:41] err on listing databases
+

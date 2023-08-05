@@ -1,7 +1,7 @@
 package inits
 
 import (
-	"github.com/Slvr-one/bookmaker/handlers"
+	"github.com/Slvr-one/bookmaker/app/handlers"
 	"github.com/joho/godotenv"
 )
 

@@ -6,19 +6,18 @@ import (
 	"log"
 	"time"
 
-	"github.com/Slvr-one/bookmaker/api"
-	"github.com/Slvr-one/bookmaker/db"
-	h "github.com/Slvr-one/bookmaker/handlers"
-	inits "github.com/Slvr-one/bookmaker/initializers"
-	s "github.com/Slvr-one/bookmaker/structs"
+	"github.com/Slvr-one/bookmaker/app/api"
+	"github.com/Slvr-one/bookmaker/app/db"
+	h "github.com/Slvr-one/bookmaker/app/handlers"
+	inits "github.com/Slvr-one/bookmaker/app/initializers"
+	s "github.com/Slvr-one/bookmaker/app/structs"
 	kratos "github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport/http"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 const (
 	DefaultServerPort = "9090"      //default port to serve app
-	DefaultMongoPort  = "27017"     // default port for mongoDB connection
+	DefaultMongoPort  = "27011"     // default port for mongoDB connection
 	DefaultHost       = "localhost" //default host for mongo database sever
 )
 
@@ -50,18 +49,18 @@ func init() {
 
 // main
 func main() {
-	exampleData := s.Car{
-		Id:        primitive.NewObjectID(),
-		CreatedAt: time.Now().UTC(),
-		Brand:     "Mercedes",
-		Model:     "G-360",
-		Year:      2002,
-	}
+	// exampleData := s.Car{
+	// 	Id:        primitive.NewObjectID(),
+	// 	CreatedAt: time.Now().UTC(),
+	// 	Brand:     "Mercedes",
+	// 	Model:     "G-360",
+	// 	Year:      2002,
+	// }
 	// db.Insert(exampleData)
 
 	router := api.InitR()
 
-	mongoHost, mongoPort, serverPort := inits.SetEnv(DefaultMongoPort, DefaultHost, DefaultServerPort)
+	mongoHost, mongoPort, serverPort := inits.SetEnv(DefaultHost, DefaultMongoPort, DefaultServerPort)
 	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
 	Conn.Client, connErr = db.MongoDB(mongodbUrl, MainBoard, Conn) // SqlDB()
 	h.Check(connErr, "err on running mongoDB func to init connect")

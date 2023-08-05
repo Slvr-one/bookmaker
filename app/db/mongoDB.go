@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	h "github.com/Slvr-one/bookmaker/handlers"
-	s "github.com/Slvr-one/bookmaker/structs"
+	h "github.com/Slvr-one/bookmaker/app/handlers"
+	s "github.com/Slvr-one/bookmaker/app/structs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	h "github.com/Slvr-one/bookmaker/handlers"
+	h "github.com/Slvr-one/bookmaker/app/handlers"
 	"github.com/gin-gonic/gin"
 	kgin "github.com/go-kratos/gin"
 
@@ -37,7 +37,7 @@ func InitR() *gin.Engine {
 	router.POST("/api/horses", h.CreateHorse)
 	router.GET("/api/:name", h.GetHorses)          //Get a specific horse
 	router.PUT("/api/horses/:name", h.UpdateHorse) //Update a specific horse
-	router.DELETE("/api/horses/:name", h.DeleteHorse)
+	// router.DELETE("/api/horses/:name", h.DeleteHorse)
 
 	// router.GET("/invest/:investor/:horse/:amount", Invest)
 

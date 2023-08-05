@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	h "github.com/Slvr-one/bookmaker/handlers"
+	h "github.com/Slvr-one/bookmaker/app/handlers"
 )
 
 func SqlDB() *sql.DB {

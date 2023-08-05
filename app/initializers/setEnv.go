@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	h "github.com/Slvr-one/bookmaker/handlers"
+	h "github.com/Slvr-one/bookmaker/app/handlers"
 )
 
 func SetEnv(host string, mPort string, sPort string) (MH string, MP string, SP string) {

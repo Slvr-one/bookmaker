@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -10,9 +11,13 @@ import (
 	"strconv"
 	"time"
 
-	s "github.com/Slvr-one/bookmaker/structs"
+	"github.com/Slvr-one/bookmaker/app/structs"
+	s "github.com/Slvr-one/bookmaker/app/structs"
+	"github.com/fatih/color"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/mux"
+	"github.com/ichtrojan/thoth"
+	"github.com/rs/zerolog/log"
 	"rsc.io/quote"
 )
 
@@ -171,14 +176,14 @@ func CreateHorse(ctx *gin.Context) {
 // 		return
 // 	}
 
-// 	for i, horse := range horses {
+// 	for i, horse := range Horses {
 // 		if horse.Name == horseName {
 // 			/* append() adds elements to a slice, but in this case, its used to remove an element:
 // 			The [:i] notation denotes that all the elements before the i-th index are included,
 // 			while [i+1:] denotes that all the elements after the i-th index are included.
 // 			By combining these two notations with the ellipsis(...), the horses slice is effectively modified to exclude the i-th element.
 // 			note that the original slice is not modified; rather, a new slice is created missing the i-th element. */
-// 			horses = append(horses[:i], horses[i+1:]...)
+// 			Horses = append(Horses[:i], Horses[i+1:]...)
 // 			break
 // 		}
 // 	}
@@ -193,7 +198,7 @@ func GetHorse(ctx *gin.Context) {
 	horseName := params["name"]
 
 	// check if the horse exists
-	exist := IfHorseExist(horseName)
+	exist := IfHorseExist(horseName, Horses)
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot get, Horse named %s does not exist", horseName)
@@ -202,7 +207,7 @@ func GetHorse(ctx *gin.Context) {
 		return
 	}
 
-	for _, h := range horses {
+	for _, h := range Horses {
 
 		if h.Name == horseName {
 			// var horse Horse
@@ -227,7 +232,7 @@ func UpdateHorse(ctx *gin.Context) {
 	horseAge, _ := strconv.Atoi(params["age"])
 
 	// check if the horse exists
-	exist := IfHorseExist(horseName)
+	exist := IfHorseExist(horseName, Horses)
 
 	if !exist {
 		msg := fmt.Sprintf("Cannot update, Horse named %s does not exist", horseName)
@@ -236,7 +241,7 @@ func UpdateHorse(ctx *gin.Context) {
 		return
 	}
 
-	newHorse := Horse{Name: horseName, Color: horseColor, Age: horseAge}
+	newHorse := s.Horse{Name: horseName, Color: horseColor, Age: horseAge}
 
 	// newHorse := Horse{color = horseColor, name = horseName}
 
@@ -266,22 +271,22 @@ func UpdateHorse(ctx *gin.Context) {
 		// TODO here probably insert new horse to db
 		// update the horse info
 
-		for i, h := range horses {
+		for _, h := range Horses {
 			if h.Name == horseName {
-				horses[i].Name = horseName   //newHorse.Name
-				horses[i].Color = horseColor //newHorse.Color
-				horses[i].Age = horseAge     //newHorse.Age
-				horses[i].Record.Losses = 0
-				horses[i].Record.Wins = 0
+				h.Name = horseName   //newHorse.Name
+				h.Color = horseColor //newHorse.Color
+				h.Age = horseAge     //newHorse.Age
+				h.Record.Losses = 0
+				h.Record.Wins = 0
 
-				// horses[i].Record = &Record{0, 0}
+				// h.Record = &s.Record{0, 0}
 
 				break
 			}
 		}
 		// return the updated horse
 
-		fmt.Fprintf(ctx.Writer, "%v", horses)
+		fmt.Fprintf(ctx.Writer, "%v", Horses)
 		return
 	}
 
@@ -303,8 +308,8 @@ func Invest(ctx *gin.Context) {
 	ctx.Writer.Header().Set("Content-Type", "application/json")
 
 	var (
-		candidate  Horse
-		better     Person
+		candidate  s.Horse
+		better     s.Person
 		investment int
 		params     = mux.Vars(ctx.Request)
 	)
@@ -330,7 +335,7 @@ func Invest(ctx *gin.Context) {
 
 	// ***
 	// check if the horse exists
-	exist := IfHorseExist(candidate.Name)
+	exist := IfHorseExist(candidate.Name, Horses)
 
 	if !exist {
 		msg := fmt.Sprintf("Horse named %s does not exist", candidate.Name)
@@ -378,7 +383,7 @@ func Invest(ctx *gin.Context) {
 		return
 	}
 
-	for _, h := range horses {
+	for _, h := range Horses {
 		if h.Name == candidate.Name {
 			quotient := h.Record.Losses / h.Record.Wins // https://www.cuemath.com/numbers/quotient/
 			// odds := math.Round(quotient)
@@ -413,7 +418,68 @@ func Invest(ctx *gin.Context) {
 			json.NewEncoder(ctx.Writer).Encode(MainBoard)
 		}
 		// return the updated record
-		fmt.Fprintf(ctx.Writer, "%v", horses)
+		fmt.Fprintf(ctx.Writer, "%v", Horses)
 		fmt.Fprintf(ctx.Writer, "%v", MainBoard)
 	}
+}
+
+///////!SECTION
+
+func Check(err error, msg string) {
+	if err != nil {
+		color.Green(msg)
+		LogToFile(msg)
+		log.Info().Msg(msg)
+		log.Fatal()
+
+		// clog.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+		// clog.Fatalf("Error: %v\n Error Message: %v", err, msg)
+
+		// panic(err.Error())
+		// os.Exit(-1)
+	}
+}
+
+func LogToFile(msg string) {
+	// init a general file for logging
+	genLogger, _ := thoth.Init("log")
+	genLogger.Log(errors.New(msg))
+}
+
+// randomFormat returns one of a set of greeting messages. The returned
+// message is selected at random.
+func RandomFormat() string {
+	// A slice of message formats.
+	formats := []string{
+		"Great to see you, %v!",
+		"Look who it is! its %v",
+		"Hi, %v. Welcome!",
+		"Hi %v, knew you'd come back",
+		"%v, You again..",
+	}
+	// Return a randomly selected message format by specifying
+	// a random index for the slice of formats.
+	i := rand.Intn(len(formats))
+	return formats[i]
+}
+
+func End(start time.Time) {
+	// log to file <end session> msg
+	t := time.Now()
+	elapsed := t.Sub(start)
+	// elapsed = time.Since(start)
+	msg := fmt.Sprintf("ended at -> %s, elapsed -> %s", t, elapsed)
+	LogToFile(msg)
+	// log.Info().Msg(msg)
+}
+
+func IfHorseExist(horseName string, horses []structs.Horse) (exist bool) {
+	for _, h := range horses {
+		if h.Name == horseName {
+			exist = true
+			break
+		}
+		exist = false
+	}
+	return exist
 }

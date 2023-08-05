@@ -3,8 +3,8 @@ package db
 import (
 	"fmt"
 
-	h "github.com/Slvr-one/bookmaker/handlers"
-	"github.com/Slvr-one/bookmaker/structs"
+	h "github.com/Slvr-one/bookmaker/app/handlers"
+	"github.com/Slvr-one/bookmaker/app/structs"
 	"github.com/gin-gonic/gin"
 )
 

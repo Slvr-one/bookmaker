@@ -3,7 +3,7 @@ package inits
 import (
 	"time"
 
-	"github.com/Slvr-one/bookmaker/structs"
+	"github.com/Slvr-one/bookmaker/app/structs"
 )
 
 func SetBoard(mb structs.Board, start time.Time) {
