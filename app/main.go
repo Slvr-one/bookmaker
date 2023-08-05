@@ -11,7 +11,7 @@ import (
 	h "github.com/Slvr-one/bookmaker/handlers"
 	inits "github.com/Slvr-one/bookmaker/initializers"
 	s "github.com/Slvr-one/bookmaker/structs"
-	"github.com/go-kratos/kratos/v2"
+	kratos "github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
