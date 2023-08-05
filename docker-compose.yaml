@@ -41,10 +41,15 @@ services:
   db:
     image: 'mongo:latest'
     container_name: 'mongo'
+    ports:
+      - '27011:27011'
     volumes:
-      - ./data/dev/mongo:/data/db
+      - './data/dev/mongo:/data/db'
     networks:
       - db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER:user_01}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASS:Aa123456}
   
 networks:
   app:
