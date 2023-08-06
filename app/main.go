@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/Slvr-one/bookmaker/app/api"
@@ -27,6 +26,7 @@ var (
 
 	Conn    s.Conn
 	connErr error
+	start   = time.Now()
 
 	// id        int
 	// item      string
@@ -37,18 +37,20 @@ var (
 
 func init() {
 	// rand.Seed(time.Now().UnixNano())
-	start := time.Now()
 	inits.InitLog()
-
-	inits.SetBoard(MainBoard, start)
 	inits.LoadEnvVars()
-
-	defer h.End(start)
+	inits.SetBoard(MainBoard, start)
+	h.Populate()
 
 }
 
 // main
 func main() {
+	defer h.EndProgram(start)
+
+	router := api.InitR()
+	c := Conn.Client
+
 	// exampleData := s.Car{
 	// 	Id:        primitive.NewObjectID(),
 	// 	CreatedAt: time.Now().UTC(),
@@ -58,23 +60,14 @@ func main() {
 	// }
 	// db.Insert(exampleData)
 
-	router := api.InitR()
-
 	mongoHost, mongoPort, serverPort := inits.SetEnv(DefaultHost, DefaultMongoPort, DefaultServerPort)
 	mongodbUrl := fmt.Sprintf("mongodb://%s:%s", mongoHost, mongoPort)
-	Conn.Client, connErr = db.MongoDB(mongodbUrl, MainBoard, Conn) // SqlDB()
+	c, connErr = db.MongoDB(mongodbUrl, MainBoard, Conn) // SqlDB()
 	h.Check(connErr, "err on running mongoDB func to init connect")
 
 	listenAddr := flag.String("listenaddr", serverPort, "port to serve the app")
 
-	// Hardcoded data - @todo: add database
-	Horses = append(Horses, s.Horse{Name: "Monahen Boy", Color: "brown", Record: &s.Record{Wins: 8, Losses: 3}})
-	Horses = append(Horses, s.Horse{Name: "Dangerous", Color: "brown:white", Record: &s.Record{Wins: 7, Losses: 1}})
-	Horses = append(Horses, s.Horse{Name: "Black Beauty", Color: "black", Record: &s.Record{Wins: 4, Losses: 5}})
-	Horses = append(Horses, s.Horse{Name: "horse 4", Color: "black", Record: &s.Record{Wins: 4, Losses: 5}})
-
-	log.Printf("🌏 set to listen on port: %v", serverPort)
-	portInfo := fmt.Sprintf("set to listen on port: %v", serverPort)
+	portInfo := fmt.Sprintf("🌏 set to listen on port: %v", serverPort)
 	h.LogToFile(portInfo)
 
 	httpSrv := http.NewServer(http.Address(":" + *listenAddr))
