@@ -23,6 +23,7 @@ def incrementVersion(String version) {
 }
 
 pipeline {
+    
     options {
         timestamps()
         timeout(time:5, unit:'MINUTES')
@@ -31,6 +32,12 @@ pipeline {
     }
 
     agent any
+    agent {
+        kubernetes {
+          // This is a YAML representation of the Pod, to allow setting any values not supported as fields.
+          yamlFile 'k8s/k8sPodTemplate.yaml' // Declarative agents can be defined from YAML.
+        }
+    }
     environment {
         //  // Define environment variables here
         // DOCKER_IMAGE = 'bookmaker'
